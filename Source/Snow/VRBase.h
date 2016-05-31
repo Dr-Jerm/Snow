@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "VRState.h"
 #include "GameFramework/Pawn.h"
 #include "VRBase.generated.h"
 
@@ -23,21 +24,16 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
-	FVector leftHandPosition;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
-	FRotator leftHandOrientation;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
-	FVector rightHandPosition;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
-	FRotator rightHandOrientation;
+	IHeadMountedDisplay* HMD = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
 	FVector leftHandVelocity;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
 	FVector rightHandVelocity;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
+	FVRState vrState;
 
 private:
 
@@ -46,3 +42,4 @@ private:
 	FVector lastLeft = FVector(0.f, 0.f, 0.f);
 	FVector lastRight = FVector(0.f, 0.f, 0.f);
 };
+

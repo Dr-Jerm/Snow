@@ -21,29 +21,47 @@ void AVRBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//TArray<IMotionController*> controllers = (TArray<IMotionController*>)GEngine->MotionControllerDevices;
-	//playerMotionControls = controllers[0];
-	
+	HMD = (IHeadMountedDisplay*)(GEngine->HMDDevice.Get());
+
+	TArray<IMotionController*> controllers = (TArray<IMotionController*>)GEngine->MotionControllerDevices;
+
+	if (controllers.Num() > 0) {
+		playerMotionControls = controllers[0];
+	}
 }
 
 // Called every frame
 void AVRBase::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+	HMD->GetBaseRotation();
+	FQuat tempRotator;
+	HMD->GetCurrentOrientationAndPosition(tempRotator, vrState.headPosition);
+	vrState.headRotation = tempRotator.Rotator();
 
-	//bool leftTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Left, leftHandOrientation, leftHandPosition);
-	//bool rightTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Right, rightHandOrientation, rightHandPosition);
+	if (playerMotionControls == nullptr) {
+		TArray<IMotionController*> controllers = (TArray<IMotionController*>)GEngine->MotionControllerDevices;
+		if (controllers.Num() > 0) {
+			playerMotionControls = controllers[0];
+		}
+		else {
+			return;
+		}
+	}
 
-	//if (leftTrack) {
-	//	FVector leftDiff = leftHandPosition - lastLeft;
-	//	leftHandVelocity = leftDiff / DeltaTime;
-	//	lastLeft = leftHandPosition;
-	//}
-	//if (rightTrack) {
-	//	FVector rightDiff = rightHandPosition - lastRight;
-	//	rightHandVelocity = rightDiff / DeltaTime;
-	//	lastRight = rightHandPosition;
-	//}
+	bool leftTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Left, vrState.leftHandRotation, vrState.leftHandPosition);
+	bool rightTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Right, vrState.rightHandRotation, vrState.rightHandPosition);
+
+	if (leftTrack) {
+		FVector leftDiff = vrState.leftHandPosition - lastLeft;
+		leftHandVelocity = leftDiff / DeltaTime;
+		lastLeft = vrState.leftHandPosition;
+	}
+	if (rightTrack) {
+		FVector rightDiff = vrState.rightHandPosition - lastRight;
+		rightHandVelocity = rightDiff / DeltaTime;
+		lastRight = vrState.rightHandPosition;
+	}
 }
 
 // Called to bind functionality to input
