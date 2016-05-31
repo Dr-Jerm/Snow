@@ -21,8 +21,8 @@ void AVRBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TArray<IMotionController*> controllers = (TArray<IMotionController*>)GEngine->MotionControllerDevices;
-	playerMotionControls = controllers[0];
+	//TArray<IMotionController*> controllers = (TArray<IMotionController*>)GEngine->MotionControllerDevices;
+	//playerMotionControls = controllers[0];
 	
 }
 
@@ -31,19 +31,19 @@ void AVRBase::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 
-	bool leftTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Left, leftHandOrientation, leftHandPosition);
-	bool rightTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Right, rightHandOrientation, rightHandPosition);
+	//bool leftTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Left, leftHandOrientation, leftHandPosition);
+	//bool rightTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Right, rightHandOrientation, rightHandPosition);
 
-	if (leftTrack) {
-		FVector leftDiff = leftHandPosition - lastLeft;
-		leftHandVelocity = leftDiff / DeltaTime;
-		lastLeft = leftHandPosition;
-	}
-	if (rightTrack) {
-		FVector rightDiff = rightHandPosition - lastRight;
-		rightHandVelocity = rightDiff / DeltaTime;
-		lastRight = rightHandPosition;
-	}
+	//if (leftTrack) {
+	//	FVector leftDiff = leftHandPosition - lastLeft;
+	//	leftHandVelocity = leftDiff / DeltaTime;
+	//	lastLeft = leftHandPosition;
+	//}
+	//if (rightTrack) {
+	//	FVector rightDiff = rightHandPosition - lastRight;
+	//	rightHandVelocity = rightDiff / DeltaTime;
+	//	lastRight = rightHandPosition;
+	//}
 }
 
 // Called to bind functionality to input
