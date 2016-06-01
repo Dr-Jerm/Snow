@@ -34,9 +34,17 @@ void AVRBase::BeginPlay()
 void AVRBase::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+
+	// this value doesn't move after the player spawns. The HMD components go
+	// off on their merry way from this point.
+	FTransform localTransform = this->GetTransform();
+	FVector localPosition = localTransform.GetLocation();
+
 	HMD->GetBaseRotation();
 	FQuat tempRotator;
-	HMD->GetCurrentOrientationAndPosition(tempRotator, vrState.headPosition);
+	FVector tempPosition;
+	HMD->GetCurrentOrientationAndPosition(tempRotator, tempPosition);
+	vrState.headPosition = tempPosition + localPosition;
 	vrState.headRotation = tempRotator.Rotator();
 
 	if (playerMotionControls == nullptr) {
@@ -49,15 +57,20 @@ void AVRBase::Tick( float DeltaTime )
 		}
 	}
 
-	bool leftTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Left, vrState.leftHandRotation, vrState.leftHandPosition);
-	bool rightTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Right, vrState.rightHandRotation, vrState.rightHandPosition);
+	FVector tempLPosition;
+	FVector tempRPosition;
+
+	bool leftTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Left, vrState.leftHandRotation, tempLPosition);
+	bool rightTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Right, vrState.rightHandRotation, tempRPosition);
 
 	if (leftTrack) {
+		vrState.leftHandPosition = tempLPosition + localPosition;
 		FVector leftDiff = vrState.leftHandPosition - lastLeft;
 		leftHandVelocity = leftDiff / DeltaTime;
 		lastLeft = vrState.leftHandPosition;
 	}
 	if (rightTrack) {
+		vrState.rightHandPosition = tempRPosition + localPosition;
 		FVector rightDiff = vrState.rightHandPosition - lastRight;
 		rightHandVelocity = rightDiff / DeltaTime;
 		lastRight = vrState.rightHandPosition;
