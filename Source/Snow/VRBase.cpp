@@ -44,7 +44,8 @@ void AVRBase::Tick( float DeltaTime )
 	FQuat tempRotator;
 	FVector tempPosition;
 	HMD->GetCurrentOrientationAndPosition(tempRotator, tempPosition);
-	vrState.headPosition = tempPosition + localPosition;
+	vrState.headPosition = tempPosition;
+	//vrState.headPosition = tempPosition + localPosition;
 	vrState.headRotation = tempRotator.Rotator();
 
 	if (playerMotionControls == nullptr) {
@@ -64,13 +65,15 @@ void AVRBase::Tick( float DeltaTime )
 	bool rightTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Right, vrState.rightHandRotation, tempRPosition);
 
 	if (leftTrack) {
-		vrState.leftHandPosition = tempLPosition + localPosition;
+		//vrState.leftHandPosition = tempLPosition + localPosition;
+		vrState.leftHandPosition = tempLPosition;
 		FVector leftDiff = vrState.leftHandPosition - lastLeft;
 		leftHandVelocity = leftDiff / DeltaTime;
 		lastLeft = vrState.leftHandPosition;
 	}
 	if (rightTrack) {
-		vrState.rightHandPosition = tempRPosition + localPosition;
+		//vrState.rightHandPosition = tempRPosition + localPosition;
+		vrState.rightHandPosition = tempRPosition;
 		FVector rightDiff = vrState.rightHandPosition - lastRight;
 		rightHandVelocity = rightDiff / DeltaTime;
 		lastRight = vrState.rightHandPosition;
