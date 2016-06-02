@@ -27,6 +27,12 @@ public:
 	IHeadMountedDisplay* HMD = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
+	FVector currentOriginPosition;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
+	FRotator currentOriginRotation;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
 	FVector leftHandVelocity;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
