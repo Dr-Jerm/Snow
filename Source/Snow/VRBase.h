@@ -43,7 +43,7 @@ public:
 
 private:
 
-	IMotionController* playerMotionControls;
+	//IMotionController* playerMotionControls;
 
 	FVector lastLeft = FVector(0.f, 0.f, 0.f);
 	FVector lastRight = FVector(0.f, 0.f, 0.f);

@@ -23,11 +23,14 @@ void AVRBase::BeginPlay()
 
 	HMD = (IHeadMountedDisplay*)(GEngine->HMDDevice.Get());
 
-	TArray<IMotionController*> controllers = (TArray<IMotionController*>)GEngine->MotionControllerDevices;
+	//TArray<IMotionController*> controllers = (TArray<IMotionController*>)GEngine->MotionControllerDevices;
+	
 
-	if (controllers.Num() > 0) {
-		playerMotionControls = controllers[0];
-	}
+	/*IMotionController::GetControllerOrientationAndPosition*/
+
+	//if (controllers.Num() > 0) {
+	//	playerMotionControls = controllers[0];
+	//}
 }
 
 // Called every frame
@@ -48,42 +51,34 @@ void AVRBase::Tick( float DeltaTime )
 	//vrState.headPosition = tempPosition + localPosition;
 	vrState.headRotation = tempRotator.Rotator();
 
-	if (playerMotionControls == nullptr) {
-		TArray<IMotionController*> controllers = (TArray<IMotionController*>)GEngine->MotionControllerDevices;
-		if (controllers.Num() > 0) {
-			playerMotionControls = controllers[0];
-		}
-		else {
-			return;
-		}
-	}
+	//if (playerMotionControls == nullptr) {
+	//	TArray<IMotionController*> controllers = (TArray<IMotionController*>)GEngine->MotionControllerDevices;
+	//	if (controllers.Num() > 0) {
+	//		playerMotionControls = controllers[0];
+	//	}
+	//	else {
+	//		return;
+	//	}
+	//}
 
-	FVector tempLPosition;
-	FVector tempRPosition;
 
-	bool leftTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Left, vrState.leftHandRotation, tempLPosition);
-	bool rightTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Right, vrState.rightHandRotation, tempRPosition);
 
-	if (leftTrack) {
-		//vrState.leftHandPosition = tempLPosition + localPosition;
-		vrState.leftHandPosition = tempLPosition;
-		FVector leftDiff = vrState.leftHandPosition - lastLeft;
-		leftHandVelocity = leftDiff / DeltaTime;
-		lastLeft = vrState.leftHandPosition;
-	}
-	if (rightTrack) {
-		//vrState.rightHandPosition = tempRPosition + localPosition;
-		vrState.rightHandPosition = tempRPosition;
-		FVector rightDiff = vrState.rightHandPosition - lastRight;
-		rightHandVelocity = rightDiff / DeltaTime;
-		lastRight = vrState.rightHandPosition;
-	}
+	//bool leftTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Left, vrState.leftHandRotation, tempLPosition);
+	//bool rightTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Right, vrState.rightHandRotation, tempRPosition);
+
+	FVector leftDiff = vrState.leftHandPosition - lastLeft;
+	leftHandVelocity = leftDiff / DeltaTime;
+	lastLeft = vrState.leftHandPosition;
+
+	FVector rightDiff = vrState.rightHandPosition - lastRight;
+	rightHandVelocity = rightDiff / DeltaTime;
+	lastRight = vrState.rightHandPosition;
+
 }
 
 // Called to bind functionality to input
 void AVRBase::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
-
 }
 

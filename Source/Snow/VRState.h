@@ -8,20 +8,20 @@ struct FVRState
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Struct")
-	FVector headPosition;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Struct")
-	FRotator headRotation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Struct")
+	FVector headPosition = FVector(0.0f, 0.0f, 0.0f);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Struct")
+	FRotator headRotation = FRotator(0.0f, 0.0f, 0.0f);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Struct")
-	FVector leftHandPosition;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Struct")
-	FRotator leftHandRotation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Struct")
+	FVector leftHandPosition = FVector(0.0f, 0.0f, 0.0f);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Struct")
+	FRotator leftHandRotation = FRotator(0.0f, 0.0f, 0.0f);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Struct")
-	FVector rightHandPosition;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Struct")
-	FRotator rightHandRotation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Struct")
+	FVector rightHandPosition = FVector(0.0f, 0.0f, 0.0f);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Struct")
+	FRotator rightHandRotation = FRotator(0.0f, 0.0f, 0.0f);
 
 	//For GC
 	void Destroy() {
