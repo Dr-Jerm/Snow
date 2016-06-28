@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "MotionControllerComponent.h"
 #include "VRState.h"
 #include "GameFramework/Pawn.h"
 #include "VRBase.generated.h"
@@ -47,5 +48,8 @@ private:
 
 	FVector lastLeft = FVector(0.f, 0.f, 0.f);
 	FVector lastRight = FVector(0.f, 0.f, 0.f);
+
+	UMotionControllerComponent* leftHand = nullptr;
+	UMotionControllerComponent* rightHand = nullptr;
 };
 

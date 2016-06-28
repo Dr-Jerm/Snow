@@ -22,6 +22,9 @@ void AVRBase::BeginPlay()
 	Super::BeginPlay();
 
 	HMD = (IHeadMountedDisplay*)(GEngine->HMDDevice.Get());
+	//GetDefaultSubobjectByName<UMotionControllerComponent>(TEXT("LeftHand"));
+	//leftHand->Hand = EControllerHand::Left;
+
 
 	//TArray<IMotionController*> controllers = (TArray<IMotionController*>)GEngine->MotionControllerDevices;
 	
@@ -31,6 +34,19 @@ void AVRBase::BeginPlay()
 	//if (controllers.Num() > 0) {
 	//	playerMotionControls = controllers[0];
 	//}
+
+	TArray<UMotionControllerComponent*> comps;
+
+	this->GetComponents(comps);
+	for (UMotionControllerComponent* motionController : comps)
+	{
+		if (motionController->Hand == EControllerHand::Left) {
+			leftHand = motionController;
+		}
+		else if (motionController->Hand == EControllerHand::Right) {
+			rightHand = motionController;
+		}
+	}
 }
 
 // Called every frame
@@ -51,20 +67,20 @@ void AVRBase::Tick( float DeltaTime )
 	//vrState.headPosition = tempPosition + localPosition;
 	vrState.headRotation = tempRotator.Rotator();
 
-	//if (playerMotionControls == nullptr) {
-	//	TArray<IMotionController*> controllers = (TArray<IMotionController*>)GEngine->MotionControllerDevices;
-	//	if (controllers.Num() > 0) {
-	//		playerMotionControls = controllers[0];
-	//	}
-	//	else {
-	//		return;
-	//	}
-	//}
-
-
-
-	//bool leftTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Left, vrState.leftHandRotation, tempLPosition);
-	//bool rightTrack = playerMotionControls->GetControllerOrientationAndPosition(0, EControllerHand::Right, vrState.rightHandRotation, tempRPosition);
+	if (leftHand != nullptr) {
+		FTransform lTrans = leftHand->GetRelativeTransform();
+		FVector leftHandPosition = lTrans.GetTranslation();
+		FRotator leftHandRotation = lTrans.GetRotation().Rotator();
+		vrState.leftHandPosition = leftHandPosition;
+		vrState.leftHandRotation = leftHandRotation;
+	}
+	if (rightHand != nullptr) {
+		FTransform rTrans = rightHand->GetRelativeTransform();
+		FVector rightHandPosition = rTrans.GetTranslation();
+		FRotator rightHandRotation = rTrans.GetRotation().Rotator();
+		vrState.rightHandPosition = rightHandPosition;
+		vrState.rightHandRotation = rightHandRotation;
+	}
 
 	FVector leftDiff = vrState.leftHandPosition - lastLeft;
 	leftHandVelocity = leftDiff / DeltaTime;
@@ -73,7 +89,6 @@ void AVRBase::Tick( float DeltaTime )
 	FVector rightDiff = vrState.rightHandPosition - lastRight;
 	rightHandVelocity = rightDiff / DeltaTime;
 	lastRight = vrState.rightHandPosition;
-
 }
 
 // Called to bind functionality to input
