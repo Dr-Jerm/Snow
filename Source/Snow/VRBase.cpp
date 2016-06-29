@@ -2,6 +2,7 @@
 
 #include "Snow.h"
 #include "VRBase.h"
+#include "UnrealNetwork.h"
 
 /* VR Includes */
 #include "HeadMountedDisplay.h"
@@ -13,7 +14,7 @@ AVRBase::AVRBase()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	bReplicates = true;
 }
 
 // Called when the game starts or when spawned
@@ -95,5 +96,31 @@ void AVRBase::Tick( float DeltaTime )
 void AVRBase::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
+}
+
+
+void AVRBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	DOREPLIFETIME(AVRBase, hatId);
+	DOREPLIFETIME(AVRBase, goggleId);
+	DOREPLIFETIME(AVRBase, chinId);
+	DOREPLIFETIME(AVRBase, gloveId);
+}
+
+void AVRBase::OnRep_hatId()
+{
+	this->appearanceChange();
+}
+void AVRBase::OnRep_goggleId()
+{
+	this->appearanceChange();
+}
+void AVRBase::OnRep_chinId()
+{
+	this->appearanceChange();
+}
+void AVRBase::OnRep_gloveId()
+{
+	this->appearanceChange();
 }
 
