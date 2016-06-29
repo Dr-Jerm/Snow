@@ -4,6 +4,8 @@
 
 #include "MotionControllerComponent.h"
 #include "VRState.h"
+#include "Core.h"
+//#include "PawnAppearance.h"
 #include "GameFramework/Pawn.h"
 #include "VRBase.generated.h"
 
@@ -42,7 +44,29 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
 	FVRState vrState;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Customization, ReplicatedUsing = OnRep_hatId)
+	int32 hatId = -1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Customization, ReplicatedUsing = OnRep_goggleId)
+	int32 goggleId = -1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Customization, ReplicatedUsing = OnRep_chinId)
+	int32 chinId = -1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Customization, ReplicatedUsing = OnRep_gloveId)
+	int32 gloveId = -1;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Appearance")
+	void appearanceChange();
+	
+
 private:
+
+	UFUNCTION()
+	void OnRep_hatId();
+	UFUNCTION()
+	void OnRep_goggleId();
+	UFUNCTION()
+	void OnRep_chinId();
+	UFUNCTION()
+	void OnRep_gloveId();
 
 	//IMotionController* playerMotionControls;
 
