@@ -55,12 +55,29 @@ public:
 	TArray<int32> Players;
 
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Scores")
-	FYourDataArray PlayerScores;
+	FYourDataArray PlayerScores = FYourDataArray();
+
+	UFUNCTION(BlueprintCallable, Category = "Scores")
+	void PlayerJoin(const int32 playerId, int32 &playerScoreIndex);
+
+	UFUNCTION(BlueprintCallable, Category = "Scores")
+	void PlayerLeave(const int32 playerId);
+
+	UFUNCTION(BlueprintCallable, Category = "Scores")
+	void ResetScore(const int32 playerId);
+
+	UFUNCTION(BlueprintCallable, Category = "Scores")
+	void GetScore(const int32 sourcePlayerId, const int32 targetPlayerId, int32 &score);
+
+	UFUNCTION(BlueprintCallable, Category = "Scores")
+	void IncrementScore(const int32 sourcePlayerId, const int32 targetPlayerId, int32 &score);
 
 
-//private:
+private:
+
+	int32 GetPlayerIndex(int32 playerId);
 	
-	int32 playerCount = 12;
+	int32 maxPlayerCount = 12;
 	
 };
 
