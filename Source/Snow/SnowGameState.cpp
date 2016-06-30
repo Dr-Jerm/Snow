@@ -133,6 +133,8 @@ int32 ASnowGameState::GetPlayerIndex(int32 playerId) {
 
 void ASnowGameState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
 	DOREPLIFETIME(ASnowGameState, Players);
 	DOREPLIFETIME(ASnowGameState, PlayerScores);
 }
