@@ -96,7 +96,8 @@ void ASnowGameState::GetScore(const int32 sourcePlayerId, const int32 targetPlay
 		return;
 	}
 
-	score = this->PlayerScores.Source[sourceIndex].Target[targetIndex];
+	int32 newScore = this->PlayerScores.Source[sourceIndex].Target[targetIndex];
+	score = newScore;
 	return;
 }
 
