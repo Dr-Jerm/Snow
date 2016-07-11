@@ -11,6 +11,7 @@ ASnowGameState::ASnowGameState()
 	PrimaryActorTick.bCanEverTick = true;
 
 	this->Players.Init(-1, this->maxPlayerCount);
+	this->PlayersLastActive.Init(-1, this->maxPlayerCount);
 
 }
 
@@ -28,6 +29,15 @@ void ASnowGameState::BeginPlay()
 void ASnowGameState::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (HasAuthority()) { // Ensure Role == ROLE_Authority
+		for (int32 i = 0; i < this->maxPlayerCount; i++) {
+			int32 idInSlot = this->Players[i];
+			if (idInSlot != -1) {
+				this->PlayersLastActive[i] = this->PlayersLastActive[i] + DeltaTime;
+			}
+		}
+	}
 }
 
 
@@ -36,6 +46,7 @@ void ASnowGameState::PlayerJoin(const int32 playerId, int32 &playerScoreIndex) {
 		int32 idInSlot = this->Players[i];
 		if (idInSlot == -1) {
 			this->Players[i] = playerId;
+			this->PlayersLastActive[i] = 0.f;
 			playerScoreIndex = i;
 			return;
 		}
@@ -75,6 +86,8 @@ void ASnowGameState::ResetScore(const int32 playerId) {
 		for (int32 y = 0; y < this->maxPlayerCount; y++) {
 			if (x == index || y == index) {
 				this->PlayerScores.Source[x].Target[y] = 0;
+				this->PlayersLastActive[x] = 0.f;
+				this->PlayersLastActive[y] = 0.f;
 			}
 		}
 	}
@@ -119,6 +132,8 @@ void ASnowGameState::IncrementScore(const int32 sourcePlayerId, const int32 targ
 	int32 newScore = this->PlayerScores.Source[sourceIndex].Target[targetIndex] + 1;
 	this->PlayerScores.Source[sourceIndex].Target[targetIndex] = newScore;
 	score = newScore;
+	this->PlayersLastActive[sourceIndex] = 0.f;
+	this->PlayersLastActive[targetIndex] = 0.f;
 
 	return;
 }

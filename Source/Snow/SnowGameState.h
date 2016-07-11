@@ -52,7 +52,13 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Scores")
+	float ScoreTimeoutTime = 60.f;
+
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Scores")
 	TArray<int32> Players;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scores")
+	TArray<float> PlayersLastActive;
 
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Scores")
 	FYourDataArray PlayerScores = FYourDataArray();
