@@ -8,6 +8,7 @@ public class SnowTarget : TargetRules
 	public SnowTarget(TargetInfo Target)
 	{
 		Type = TargetType.Game;
+        bUsesSteam = true;
 	}
 
 	//
