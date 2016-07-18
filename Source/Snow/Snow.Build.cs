@@ -8,8 +8,16 @@ public class Snow : ModuleRules
 	{
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
+        /* Online Module */
+        PublicDependencyModuleNames.AddRange(new string[] {
+             "OnlineSubsystem",
+             "OnlineSubsystemUtils"
+         });
+        DynamicallyLoadedModuleNames.Add("OnlineSubsystemSteam");
+
         /* VR Module */
         PrivateDependencyModuleNames.AddRange(new string[] { "HeadMountedDisplay" });
+
 
         // Uncomment if you are using Slate UI
         // PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
