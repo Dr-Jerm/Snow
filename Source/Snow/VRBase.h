@@ -44,29 +44,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
 	FVRState vrState;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Customization, ReplicatedUsing = OnRep_hatId)
-	int32 hatId = -1;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Customization, ReplicatedUsing = OnRep_goggleId)
-	int32 goggleId = -1;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Customization, ReplicatedUsing = OnRep_chinId)
-	int32 chinId = -1;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Customization, ReplicatedUsing = OnRep_gloveId)
-	int32 gloveId = -1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Customization, ReplicatedUsing = OnRep_Customization)
+	TArray<int32> Customization;
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Appearance")
+	UFUNCTION(BlueprintImplementableEvent, Category = "Customization")
 	void appearanceChange();
 	
 
 private:
 
 	UFUNCTION()
-	void OnRep_hatId();
-	UFUNCTION()
-	void OnRep_goggleId();
-	UFUNCTION()
-	void OnRep_chinId();
-	UFUNCTION()
-	void OnRep_gloveId();
+	void OnRep_Customization();
 
 	//IMotionController* playerMotionControls;
 
