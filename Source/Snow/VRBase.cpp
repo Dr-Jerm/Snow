@@ -14,6 +14,7 @@ AVRBase::AVRBase()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	this->Customization.Init(-1, 5);
 	bReplicates = true;
 }
 
@@ -101,10 +102,15 @@ void AVRBase::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 
 void AVRBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
+	DOREPLIFETIME(AVRBase, Customization);
 	DOREPLIFETIME(AVRBase, hatId);
 	DOREPLIFETIME(AVRBase, goggleId);
 	DOREPLIFETIME(AVRBase, chinId);
 	DOREPLIFETIME(AVRBase, gloveId);
+}
+
+void AVRBase::OnRep_Customization() {
+	this->appearanceChange();
 }
 
 void AVRBase::OnRep_hatId()
