@@ -8,6 +8,9 @@ public class Snow : ModuleRules
 	{
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
+        /* HTTP Module */
+        PublicDependencyModuleNames.AddRange(new string[] { "Http", "Json", "JsonUtilities" });
+
         /* Online Module */
         PublicDependencyModuleNames.AddRange(new string[] {
              "OnlineSubsystem",

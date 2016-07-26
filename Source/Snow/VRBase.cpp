@@ -3,6 +3,7 @@
 #include "Snow.h"
 #include "VRBase.h"
 #include "UnrealNetwork.h"
+//#include "SnowHTTP.h"
 
 /* VR Includes */
 #include "HeadMountedDisplay.h"
@@ -107,5 +108,7 @@ void AVRBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifeti
 
 void AVRBase::OnRep_Customization() {
 	this->appearanceChange();
+	//USnowHTTP::Instance()->MyHttpCall(NULL);
+	//USnowHTTP::MyHttpCall();
 }
 
