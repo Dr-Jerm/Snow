@@ -56,10 +56,14 @@ private:
 	UFUNCTION()
 	void OnRep_Customization();
 
+	FVector getArrayAverage(TArray<FVector>);
+
 	//IMotionController* playerMotionControls;
 
 	FVector lastLeft = FVector(0.f, 0.f, 0.f);
 	FVector lastRight = FVector(0.f, 0.f, 0.f);
+	TArray<FVector> leftVelocities;
+	TArray<FVector> rightVelocities;
 
 	UMotionControllerComponent* leftHand = nullptr;
 	UMotionControllerComponent* rightHand = nullptr;
