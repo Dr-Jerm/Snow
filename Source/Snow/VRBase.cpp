@@ -4,6 +4,7 @@
 #include "VRBase.h"
 #include "UnrealNetwork.h"
 //#include "SnowHTTP.h"
+#include "SnowLogger.h"
 
 /* VR Includes */
 #include "HeadMountedDisplay.h"

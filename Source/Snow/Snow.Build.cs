@@ -6,7 +6,7 @@ public class Snow : ModuleRules
 {
 	public Snow(TargetInfo Target)
 	{
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Sockets", "Networking" });
 
         /* HTTP Module */
         PublicDependencyModuleNames.AddRange(new string[] { "Http", "Json", "JsonUtilities" });
@@ -20,6 +20,11 @@ public class Snow : ModuleRules
 
         /* VR Module */
         PrivateDependencyModuleNames.AddRange(new string[] { "HeadMountedDisplay" });
+
+        /* 3rd Party Plugins */
+        PrivateDependencyModuleNames.AddRange(new string[] { "VaRestPlugin" });
+
+
 
 
         // Uncomment if you are using Slate UI
