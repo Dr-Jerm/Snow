@@ -18,4 +18,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Kinematics")
 	static FVector KinematicsCalculateVelocity(FVector initialVelocity, FVector acceleration, float time);
+
+	UFUNCTION(BlueprintPure, Category = "Kinematics")
+	static FVector KinematicsCalculateInitialVelocity(FVector initialPosition, FVector hitPosition, FVector acceleration, float hitTime);
 };

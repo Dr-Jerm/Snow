@@ -47,3 +47,7 @@ float UKinematicsFunctionLibrary::KinematicsCalculateTime(FVector initialPositio
 FVector UKinematicsFunctionLibrary::KinematicsCalculateVelocity(FVector initialVelocity, FVector acceleration, float time) {
 	return initialVelocity + acceleration * time;
 }
+
+FVector UKinematicsFunctionLibrary::KinematicsCalculateInitialVelocity(FVector initialPosition, FVector hitPosition, FVector acceleration, float hitTime) {
+	return ((hitPosition - initialPosition) - ((hitTime * hitTime / 2) * acceleration)) / hitTime;
+}
