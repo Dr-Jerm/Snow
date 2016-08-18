@@ -25,7 +25,7 @@ PollingIntervalInMs=20
  
 [OnlineSubsystemSteam]
 bEnabled=true
-SteamDevAppId=480
+SteamDevAppId=515700
 GameServerQueryPort=27015
 bRelaunchInSteam=false
 GameVersion=1.0.0.0
