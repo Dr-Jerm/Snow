@@ -1,16 +1,16 @@
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\AdvancedExternalUILibrary.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\AdvancedFriendsGameInstance.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\AdvancedFriendsInterface.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\AdvancedFriendsLibrary.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\AdvancedSessionsLibrary.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\AdvancedVoiceLibrary.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\BlueprintDataDefinitions.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\CancelFindSessionsCallbackProxy.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\CreateSessionCallbackProxyAdvanced.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\EndSessionCallbackProxy.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\FindFriendSessionCallbackProxy.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\FindSessionsCallbackProxyAdvanced.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\GetFriendsCallbackProxy.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\GetRecentPlayersCallbackProxy.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\SendFriendInviteCallbackProxy.h
-D:\Projects\UDK4\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\UpdateSessionCallbackProxyAdvanced.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\AdvancedExternalUILibrary.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\AdvancedFriendsGameInstance.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\AdvancedFriendsInterface.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\AdvancedFriendsLibrary.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\AdvancedSessionsLibrary.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\AdvancedVoiceLibrary.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\BlueprintDataDefinitions.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\CancelFindSessionsCallbackProxy.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\CreateSessionCallbackProxyAdvanced.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\EndSessionCallbackProxy.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\FindFriendSessionCallbackProxy.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\FindSessionsCallbackProxyAdvanced.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\GetFriendsCallbackProxy.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\GetRecentPlayersCallbackProxy.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\SendFriendInviteCallbackProxy.h
+C:\Users\Commander\Documents\Unreal Projects\Snow\Plugins\AdvancedSessions\Source\AdvancedSessions\Classes\UpdateSessionCallbackProxyAdvanced.h
