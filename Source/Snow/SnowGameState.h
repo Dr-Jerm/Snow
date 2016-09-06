@@ -55,7 +55,7 @@ public:
 	float ScoreTimeoutTime = 60.f;
 
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Scores")
-	TArray<int32> Players;
+	TArray<FString> Players;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Scores")
 	TArray<float> PlayersLastActive;
@@ -64,24 +64,24 @@ public:
 	FYourDataArray PlayerScores = FYourDataArray();
 
 	UFUNCTION(BlueprintCallable, Category = "Scores")
-	void PlayerJoin(const int32 playerId, int32 &playerScoreIndex);
+	void PlayerJoin(const FString playerId, int32 &playerScoreIndex);
 
 	UFUNCTION(BlueprintCallable, Category = "Scores")
-	void PlayerLeave(const int32 playerId);
+	void PlayerLeave(const FString playerId);
 
 	UFUNCTION(BlueprintCallable, Category = "Scores")
-	void ResetScore(const int32 playerId);
+	void ResetScore(const FString playerId);
 
 	UFUNCTION(BlueprintCallable, Category = "Scores")
-	void GetScore(const int32 sourcePlayerId, const int32 targetPlayerId, int32 &score);
+	void GetScore(const FString sourcePlayerId, const FString targetPlayerId, int32 &score);
 
 	UFUNCTION(BlueprintCallable, Category = "Scores")
-	void IncrementScore(const int32 sourcePlayerId, const int32 targetPlayerId, int32 &score);
+	void IncrementScore(const FString sourcePlayerId, const FString targetPlayerId, int32 &score);
 
 
 private:
 
-	int32 GetPlayerIndex(int32 playerId);
+	int32 GetPlayerIndex(FString playerId);
 	
 	int32 maxPlayerCount = 12;
 	

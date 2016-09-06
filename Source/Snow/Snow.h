@@ -8,9 +8,10 @@ UENUM(BlueprintType)		//"BlueprintType" is essential to include
 enum class ECustomizationEnum : uint8
 {
 	CE_Base    = 0	UMETA(DisplayName = "Base"),
-	CE_Hat     = 1	UMETA(DisplayName = "Hat"),
-	CE_Goggles = 2	UMETA(DisplayName = "Goggles"),
-	CE_Chin    = 3  UMETA(DisplayName = "Chin"),
-	CE_Gloves  = 4  UMETA(DisplayName = "Gloves")
+	CE_Gloves  = 1  UMETA(DisplayName = "Gloves"),
+	CE_Hat     = 2	UMETA(DisplayName = "Hat"),
+	CE_Eyes    = 3	UMETA(DisplayName = "Eyes"),
+	CE_Chin    = 4  UMETA(DisplayName = "Chin")
+	
 };
 

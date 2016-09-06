@@ -10,7 +10,7 @@ ASnowGameState::ASnowGameState()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	this->Players.Init(-1, this->maxPlayerCount);
+	this->Players.Init("", this->maxPlayerCount);
 	this->PlayersLastActive.Init(-1, this->maxPlayerCount);
 
 }
@@ -32,8 +32,8 @@ void ASnowGameState::Tick(float DeltaTime)
 
 	if (HasAuthority()) { // Ensure Role == ROLE_Authority
 		for (int32 i = 0; i < this->maxPlayerCount; i++) {
-			int32 idInSlot = this->Players[i];
-			if (idInSlot != -1) {
+			FString idInSlot = this->Players[i];
+			if (idInSlot != "") {
 				this->PlayersLastActive[i] = this->PlayersLastActive[i] + DeltaTime;
 			}
 		}
@@ -41,10 +41,10 @@ void ASnowGameState::Tick(float DeltaTime)
 }
 
 
-void ASnowGameState::PlayerJoin(const int32 playerId, int32 &playerScoreIndex) {
+void ASnowGameState::PlayerJoin(const FString playerId, int32 &playerScoreIndex) {
 	for (int32 i = 0; i < this->maxPlayerCount; i++) {
-		int32 idInSlot = this->Players[i];
-		if (idInSlot == -1) {
+		FString idInSlot = this->Players[i];
+		if (idInSlot == "") {
 			this->Players[i] = playerId;
 			this->PlayersLastActive[i] = 0.f;
 			playerScoreIndex = i;
@@ -53,7 +53,7 @@ void ASnowGameState::PlayerJoin(const int32 playerId, int32 &playerScoreIndex) {
 	}
 }
 
-void ASnowGameState::PlayerLeave(const int32 playerId) {
+void ASnowGameState::PlayerLeave(const FString playerId) {
 
 	int32 index = this->GetPlayerIndex(playerId);
 	if (index == -1) {
@@ -61,7 +61,7 @@ void ASnowGameState::PlayerLeave(const int32 playerId) {
 		return;
 	}
 
-	this->Players[index] = -1;
+	this->Players[index] = "";
 			
 	for (int32 x = 0; x < this->maxPlayerCount; x++) {
 		for (int32 y = 0; y < this->maxPlayerCount; y++) {
@@ -74,7 +74,7 @@ void ASnowGameState::PlayerLeave(const int32 playerId) {
 	return;
 }
 
-void ASnowGameState::ResetScore(const int32 playerId) {
+void ASnowGameState::ResetScore(const FString playerId) {
 
 	int32 index = this->GetPlayerIndex(playerId);
 	if (index == -1) {
@@ -95,7 +95,7 @@ void ASnowGameState::ResetScore(const int32 playerId) {
 	return;
 }
 
-void ASnowGameState::GetScore(const int32 sourcePlayerId, const int32 targetPlayerId, int32 &score) {
+void ASnowGameState::GetScore(const FString sourcePlayerId, const FString targetPlayerId, int32 &score) {
 	int32 sourceIndex = this->GetPlayerIndex(sourcePlayerId);
 	if (sourceIndex == -1) {
 		UE_LOG(LogTemp, Error, TEXT("sourcePlayerId not found."));
@@ -115,7 +115,7 @@ void ASnowGameState::GetScore(const int32 sourcePlayerId, const int32 targetPlay
 	return;
 }
 
-void ASnowGameState::IncrementScore(const int32 sourcePlayerId, const int32 targetPlayerId, int32 &score) {
+void ASnowGameState::IncrementScore(const FString sourcePlayerId, const FString targetPlayerId, int32 &score) {
 	int32 sourceIndex = this->GetPlayerIndex(sourcePlayerId);
 	if (sourceIndex == -1) {
 		UE_LOG(LogTemp, Error, TEXT("sourcePlayerId not found."));
@@ -138,9 +138,9 @@ void ASnowGameState::IncrementScore(const int32 sourcePlayerId, const int32 targ
 	return;
 }
 
-int32 ASnowGameState::GetPlayerIndex(int32 playerId) {
+int32 ASnowGameState::GetPlayerIndex(FString playerId) {
 	for (int32 i = 0; i < this->maxPlayerCount; i++) {
-		int32 idInSlot = this->Players[i];
+		FString idInSlot = this->Players[i];
 		if (idInSlot == playerId) {
 			return i;
 		}
