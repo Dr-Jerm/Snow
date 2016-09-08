@@ -115,6 +115,27 @@ void ASnowGameState::GetScore(const FString sourcePlayerId, const FString target
 	return;
 }
 
+void ASnowGameState::GetScore(const FString sourcePlayerId, const FString targetPlayerId, int32 &score) {
+	int32 sourceIndex = this->GetPlayerIndex(sourcePlayerId);
+	if (sourceIndex == -1) {
+		UE_LOG(LogTemp, Error, TEXT("sourcePlayerId not found."));
+		score = -1;
+		return;
+	}
+	int32 targetIndex = this->GetPlayerIndex(targetPlayerId);
+	if (targetIndex == -1) {
+		UE_LOG(LogTemp, Error, TEXT("targetPlayerId not found."));
+		score = -1;
+		return;
+	}
+
+	int32 sourceTargetScore = this->PlayerScores.Source[sourceIndex].Target[targetIndex];
+	int32 targetSourceScore = this->PlayerScores.Source[targetIndex].Target[sourceIndex];
+	score = sourceTargetScore - targetSourceScore;
+	return;
+}
+
+
 void ASnowGameState::IncrementScore(const FString sourcePlayerId, const FString targetPlayerId, int32 &score) {
 	int32 sourceIndex = this->GetPlayerIndex(sourcePlayerId);
 	if (sourceIndex == -1) {
@@ -130,6 +151,29 @@ void ASnowGameState::IncrementScore(const FString sourcePlayerId, const FString 
 	}
 
 	int32 newScore = this->PlayerScores.Source[sourceIndex].Target[targetIndex] + 1;
+	this->PlayerScores.Source[sourceIndex].Target[targetIndex] = newScore;
+	score = newScore;
+	this->PlayersLastActive[sourceIndex] = 0.f;
+	this->PlayersLastActive[targetIndex] = 0.f;
+
+	return;
+}
+
+void ASnowGameState::DecrementScore(const FString sourcePlayerId, const FString targetPlayerId, int32 &score) {
+	int32 sourceIndex = this->GetPlayerIndex(sourcePlayerId);
+	if (sourceIndex == -1) {
+		UE_LOG(LogTemp, Error, TEXT("sourcePlayerId not found."));
+		score = -1;
+		return;
+	}
+	int32 targetIndex = this->GetPlayerIndex(targetPlayerId);
+	if (targetIndex == -1) {
+		UE_LOG(LogTemp, Error, TEXT("targetPlayerId not found."));
+		score = -1;
+		return;
+	}
+
+	int32 newScore = this->PlayerScores.Source[sourceIndex].Target[targetIndex] -1;
 	this->PlayerScores.Source[sourceIndex].Target[targetIndex] = newScore;
 	score = newScore;
 	this->PlayersLastActive[sourceIndex] = 0.f;
