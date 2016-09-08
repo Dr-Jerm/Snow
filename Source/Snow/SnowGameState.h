@@ -76,7 +76,7 @@ public:
 	void GetScore(const FString sourcePlayerId, const FString targetPlayerId, int32 &score);
 
 	UFUNCTION(BlueprintCallable, Category = "Scores")
-	void GetTotalScore(const FString sourcePlayerId, int32 &score);
+	void GetTotalScore(const FString playerId, int32 &score);
 
 	UFUNCTION(BlueprintCallable, Category = "Scores")
 	void IncrementScore(const FString sourcePlayerId, const FString targetPlayerId, int32 &score);
