@@ -29,24 +29,13 @@ host="http://192.168.1.113:3001"
 
 [Plugins]
 +EnabledPlugins=VaRestPlugin
-
-[/Script/Engine.GameEngine]
-!NetDriverDefinitions=ClearArray
-+NetDriverDefinitions=(DefName="GameNetDriver",DriverClassName="/Script/OnlineSubsystemSteam.SteamNetDriver",DriverClassNameFallback="/Script/OnlineSubsystemUtils.IpNetDriver")
  
 [Voice] 
 bEnabled=true
 
 [OnlineSubsystem]
-DefaultPlatformService=Steam
-bHasVoiceEnabled=true
- 
-[OnlineSubsystemSteam]
-bEnabled=true
-SteamDevAppId=515700
- 
-[/Script/OnlineSubsystemSteam.SteamNetDriver]
-NetConnectionClassName="OnlineSubsystemSteam.SteamNetConnection"
+DefaultPlatformService=Null
+
 
 [/Script/Engine.AudioSettings]
 VoiPSoundClass=/Game/Online/VOIP.VOIP

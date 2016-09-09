@@ -16,7 +16,9 @@ public class Snow : ModuleRules
              "OnlineSubsystem",
              "OnlineSubsystemUtils"
          });
+
         DynamicallyLoadedModuleNames.Add("OnlineSubsystemSteam");
+        //DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
 
         /* VR Module */
         PrivateDependencyModuleNames.AddRange(new string[] { "HeadMountedDisplay" });
