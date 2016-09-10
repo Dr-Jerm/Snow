@@ -115,6 +115,26 @@ void ASnowGameState::GetScore(const FString sourcePlayerId, const FString target
 	return;
 }
 
+void ASnowGameState::GetTotalScore(const FString playerId, int32 &score) {
+	int32 sourceIndex = this->GetPlayerIndex(playerId);
+	if (sourceIndex == -1) {
+		UE_LOG(LogTemp, Error, TEXT("playerId not found."));
+		score = -1;
+		return;
+	}
+
+	int32 sumScore = 0;
+
+	FYourDataRow sourceTargets = this->PlayerScores.Source[sourceIndex];
+	for (int32 i = 0; i < this->maxPlayerCount; i++) {
+		int32 targetScore = sourceTargets.Target[i];
+		sumScore = sumScore + targetScore;
+	}
+	score = sumScore;
+	return;
+}
+
+
 void ASnowGameState::IncrementScore(const FString sourcePlayerId, const FString targetPlayerId, int32 &score) {
 	int32 sourceIndex = this->GetPlayerIndex(sourcePlayerId);
 	if (sourceIndex == -1) {
@@ -130,6 +150,29 @@ void ASnowGameState::IncrementScore(const FString sourcePlayerId, const FString 
 	}
 
 	int32 newScore = this->PlayerScores.Source[sourceIndex].Target[targetIndex] + 1;
+	this->PlayerScores.Source[sourceIndex].Target[targetIndex] = newScore;
+	score = newScore;
+	this->PlayersLastActive[sourceIndex] = 0.f;
+	this->PlayersLastActive[targetIndex] = 0.f;
+
+	return;
+}
+
+void ASnowGameState::DecrementScore(const FString sourcePlayerId, const FString targetPlayerId, int32 &score) {
+	int32 sourceIndex = this->GetPlayerIndex(sourcePlayerId);
+	if (sourceIndex == -1) {
+		UE_LOG(LogTemp, Error, TEXT("sourcePlayerId not found."));
+		score = -1;
+		return;
+	}
+	int32 targetIndex = this->GetPlayerIndex(targetPlayerId);
+	if (targetIndex == -1) {
+		UE_LOG(LogTemp, Error, TEXT("targetPlayerId not found."));
+		score = -1;
+		return;
+	}
+
+	int32 newScore = this->PlayerScores.Source[sourceIndex].Target[targetIndex] -1;
 	this->PlayerScores.Source[sourceIndex].Target[targetIndex] = newScore;
 	score = newScore;
 	this->PlayersLastActive[sourceIndex] = 0.f;
