@@ -17,7 +17,7 @@ public class Snow : ModuleRules
              "OnlineSubsystemUtils"
          });
 
-        DynamicallyLoadedModuleNames.Add("OnlineSubsystemSteam");
+        //DynamicallyLoadedModuleNames.Add("OnlineSubsystemSteam");
         //DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
 
         /* VR Module */
