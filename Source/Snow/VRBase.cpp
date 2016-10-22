@@ -17,8 +17,12 @@ AVRBase::AVRBase()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	this->Customization.Init(-1, 5);
-	this->leftVelocities.Init(FVector(0.f, 0.f, 0.f), 2);
-	this->rightVelocities.Init(FVector(0.f, 0.f, 0.f), 2);
+	this->headPositionVelocities.Init(FVector(0.f, 0.f, 0.f), velocityTicks);
+	this->headRotationVelocities.Init(FQuat(0.f, 0.f, 0.f, 0.f), velocityTicks);
+	this->leftPositionVelocities.Init(FVector(0.f, 0.f, 0.f), velocityTicks);
+	this->leftRotationVelocities.Init(FQuat(0.f, 0.f, 0.f, 0.f), velocityTicks);
+	this->rightPositionVelocities.Init(FVector(0.f, 0.f, 0.f), velocityTicks);
+	this->rightRotationVelocities.Init(FQuat(0.f, 0.f, 0.f, 0.f), velocityTicks);
 	bReplicates = true;
 }
 
@@ -91,18 +95,46 @@ void AVRBase::Tick( float DeltaTime )
 		vrState.rightHandRotation = rightHandRotation;
 	}
 
-	
-	FVector leftDiff = vrState.leftHandPosition - lastLeft;
-	leftVelocities.Insert(leftDiff / DeltaTime, 0);
-	leftVelocities.Pop();
-	leftHandVelocity = this->getArrayAverage(leftVelocities);
-	lastLeft = vrState.leftHandPosition;
+	FVector headPosDiff = vrState.headPosition - lastHeadPosition;
+	headPositionVelocities.Insert(headPosDiff / DeltaTime, 0);
+	headPositionVelocities.Pop();
+	vrState.headPositionVelocity = this->getVectorArrayAverage(headPositionVelocities);
+	lastHeadPosition = vrState.headPosition;
 
-	FVector rightDiff = vrState.rightHandPosition - lastRight;
-	rightVelocities.Insert(rightDiff / DeltaTime, 0);
-	rightVelocities.Pop();
-	rightHandVelocity = this->getArrayAverage(rightVelocities);
-	lastRight = vrState.rightHandPosition;
+	FQuat currHeadRot = FQuat(vrState.headRotation);
+	FQuat headRotDiff = currHeadRot - lastHeadRotation;
+	headRotationVelocities.Insert(headRotDiff / DeltaTime, 0);
+	headRotationVelocities.Pop();
+	vrState.headRotationVelocity = this->getRotatorArrayAverage(headRotationVelocities);
+	lastHeadRotation = currHeadRot;
+
+	FVector leftPosDiff = vrState.leftHandPosition - lastLeftPosition;
+	leftPositionVelocities.Insert(leftPosDiff / DeltaTime, 0);
+	leftPositionVelocities.Pop();
+	leftHandVelocity = this->getVectorArrayAverage(leftPositionVelocities);
+	vrState.leftHandPositionVelocity = leftHandVelocity;
+	lastLeftPosition = vrState.leftHandPosition;
+
+	FQuat currLeftRot = FQuat(vrState.leftHandRotation);
+	FQuat leftRotDiff = currLeftRot - lastLeftRotation;
+	leftRotationVelocities.Insert(leftRotDiff / DeltaTime, 0);
+	leftRotationVelocities.Pop();
+	vrState.leftHandRotationVelocity = this->getRotatorArrayAverage(leftRotationVelocities);
+	lastLeftRotation = currLeftRot;
+
+	FVector rightPosDiff = vrState.rightHandPosition - lastRightPosition;
+	rightPositionVelocities.Insert(rightPosDiff / DeltaTime, 0);
+	rightPositionVelocities.Pop();
+	rightHandVelocity = this->getVectorArrayAverage(rightPositionVelocities);
+	vrState.rightHandPositionVelocity = rightHandVelocity;
+	lastRightPosition = vrState.rightHandPosition;
+
+	FQuat currRightRot = FQuat(vrState.rightHandRotation);
+	FQuat rightRotDiff = currRightRot - lastRightRotation;
+	rightRotationVelocities.Insert(rightRotDiff / DeltaTime, 0);
+	rightRotationVelocities.Pop();
+	vrState.rightHandRotationVelocity = this->getRotatorArrayAverage(rightRotationVelocities);
+	lastRightRotation = currRightRot;
 }
 
 // Called to bind functionality to input
@@ -123,11 +155,19 @@ void AVRBase::OnRep_Customization() {
 	//USnowHTTP::MyHttpCall();
 }
 
-FVector AVRBase::getArrayAverage(TArray<FVector> inputArray) {
+FVector AVRBase::getVectorArrayAverage(TArray<FVector> inputArray) {
 	FVector sum = FVector(0.f, 0.f, 0.f);
 	for (auto& vec : inputArray) {
 		sum = sum + vec;
 	}
 	return sum / inputArray.Num();
+}
+
+FRotator AVRBase::getRotatorArrayAverage(TArray<FQuat> inputArray) {
+	FQuat sum = FQuat(0.f, 0.f, 0.f, 0.f);
+	for (auto& quat : inputArray) {
+		sum = sum + quat;
+	}
+	return FQuat(sum / inputArray.Num()).Rotator();
 }
 

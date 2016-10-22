@@ -29,11 +29,11 @@ public:
 
 	IHeadMountedDisplay* HMD = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
-	FVector currentOriginPosition;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
+	//FVector currentOriginPosition;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
-	FRotator currentOriginRotation;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
+	//FRotator currentOriginRotation;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
 	FVector leftHandVelocity;
@@ -56,14 +56,24 @@ private:
 	UFUNCTION()
 	void OnRep_Customization();
 
-	FVector getArrayAverage(TArray<FVector>);
+	FVector getVectorArrayAverage(TArray<FVector>);
+	FRotator getRotatorArrayAverage(TArray<FQuat>);
 
+	int32 velocityTicks = 2;
 	//IMotionController* playerMotionControls;
 
-	FVector lastLeft = FVector(0.f, 0.f, 0.f);
-	FVector lastRight = FVector(0.f, 0.f, 0.f);
-	TArray<FVector> leftVelocities;
-	TArray<FVector> rightVelocities;
+	FVector lastHeadPosition = FVector(0.f, 0.f, 0.f);
+	FQuat lastHeadRotation = FQuat(0.f, 0.f, 0.f, 0.f);
+	FVector lastLeftPosition = FVector(0.f, 0.f, 0.f);
+	FQuat lastLeftRotation = FQuat(0.f, 0.f, 0.f, 0.f);
+	FVector lastRightPosition = FVector(0.f, 0.f, 0.f);
+	FQuat lastRightRotation = FQuat(0.f, 0.f, 0.f, 0.f);
+	TArray<FVector> headPositionVelocities;
+	TArray<FQuat> headRotationVelocities;
+	TArray<FVector> leftPositionVelocities;
+	TArray<FQuat> leftRotationVelocities;
+	TArray<FVector> rightPositionVelocities;
+	TArray<FQuat> rightRotationVelocities;
 
 	UMotionControllerComponent* leftHand = nullptr;
 	UMotionControllerComponent* rightHand = nullptr;
