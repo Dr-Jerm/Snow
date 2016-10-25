@@ -67,77 +67,81 @@ void AVRBase::Tick( float DeltaTime )
 	if (HMD == nullptr) {
 		return;
 	}
-	// this value doesn't move after the player spawns. The HMD components go
-	// off on their merry way from this point.
-	FTransform localTransform = this->GetTransform();
-	FVector localPosition = localTransform.GetLocation();
+	if (IsLocallyControlled()) {
+		//Client version of the pawn
 
-	HMD->GetBaseRotation();
-	FQuat tempRotator;
-	FVector tempPosition;
-	HMD->GetCurrentOrientationAndPosition(tempRotator, tempPosition);
-	vrState.headPosition = tempPosition;
-	//vrState.headPosition = tempPosition + localPosition;
-	vrState.headRotation = tempRotator.Rotator();
+		// this value doesn't move after the player spawns. The HMD components go
+		// off on their merry way from this point.
+		FTransform localTransform = this->GetTransform();
+		FVector localPosition = localTransform.GetLocation();
 
-	if (leftHand != nullptr) {
-		FTransform lTrans = leftHand->GetRelativeTransform();
-		FVector leftHandPosition = lTrans.GetTranslation();
-		FRotator leftHandRotation = lTrans.GetRotation().Rotator();
-		vrState.leftHandPosition = leftHandPosition;
-		vrState.leftHandRotation = leftHandRotation;
+		HMD->GetBaseRotation();
+		FQuat tempRotator;
+		FVector tempPosition;
+		HMD->GetCurrentOrientationAndPosition(tempRotator, tempPosition);
+		vrState.headPosition = tempPosition;
+		//vrState.headPosition = tempPosition + localPosition;
+		vrState.headRotation = tempRotator.Rotator();
+
+		if (leftHand != nullptr) {
+			FTransform lTrans = leftHand->GetRelativeTransform();
+			FVector leftHandPosition = lTrans.GetTranslation();
+			FRotator leftHandRotation = lTrans.GetRotation().Rotator();
+			vrState.leftHandPosition = leftHandPosition;
+			vrState.leftHandRotation = leftHandRotation;
+		}
+		if (rightHand != nullptr) {
+			FTransform rTrans = rightHand->GetRelativeTransform();
+			FVector rightHandPosition = rTrans.GetTranslation();
+			FRotator rightHandRotation = rTrans.GetRotation().Rotator();
+			vrState.rightHandPosition = rightHandPosition;
+			vrState.rightHandRotation = rightHandRotation;
+		}
+
+		FVector headPosDiff = vrState.headPosition - lastHeadPosition;
+		headPositionVelocities.Insert(headPosDiff / DeltaTime, 0);
+		headPositionVelocities.Pop();
+		vrState.headPositionVelocity = this->getVectorArrayAverage(headPositionVelocities);
+		lastHeadPosition = vrState.headPosition;
+
+		//FRotator headRotDiff = vrState.headRotation - lastHeadRotation;
+		//headRotationVelocities.Insert(headRotDiff / DeltaTime, 0);
+		//headRotationVelocities.Pop();
+		vrState.headAngularDiff = FQuat::Slerp(lastHeadRotation.Quaternion(), vrState.headRotation.Quaternion(), DeltaTime).Rotator();
+		//FQuat(headRotDiff).Slerp()
+		//vrState.headAngularDiff = this->getVectorArrayAverage(headRotationVelocities);
+		lastHeadRotation = vrState.headRotation;
+
+		FVector leftPosDiff = vrState.leftHandPosition - lastLeftPosition;
+		leftPositionVelocities.Insert(leftPosDiff / DeltaTime, 0);
+		leftPositionVelocities.Pop();
+		leftHandVelocity = this->getVectorArrayAverage(leftPositionVelocities);
+		vrState.leftHandPositionVelocity = leftHandVelocity;
+		lastLeftPosition = vrState.leftHandPosition;
+
+		//FVector leftRotDiff = vrState.leftHandRotation.Vector() - lastLeftRotation.Vector();
+		//leftRotationVelocities.Insert(leftRotDiff / DeltaTime, 0);
+		//leftRotationVelocities.Pop();
+		//vrState.leftHandAngularDiff = this->getVectorArrayAverage(leftRotationVelocities);
+		vrState.leftHandAngularDiff = FQuat::Slerp(vrState.leftHandRotation.Quaternion(), lastLeftRotation.Quaternion(), DeltaTime).Rotator();
+		lastLeftRotation = vrState.leftHandRotation;
+
+		FVector rightPosDiff = vrState.rightHandPosition - lastRightPosition;
+		rightPositionVelocities.Insert(rightPosDiff / DeltaTime, 0);
+		rightPositionVelocities.Pop();
+		rightHandVelocity = this->getVectorArrayAverage(rightPositionVelocities);
+		vrState.rightHandPositionVelocity = rightHandVelocity;
+		lastRightPosition = vrState.rightHandPosition;
+
+		//FVector rightRotDiff = vrState.rightHandRotation.Vector() - lastRightRotation.Vector();
+		//rightRotationVelocities.Insert(rightRotDiff / DeltaTime, 0);
+		//rightRotationVelocities.Pop();
+		//vrState.rightHandAngularDiff = this->getVectorArrayAverage(rightRotationVelocities);
+		vrState.rightHandAngularDiff = FQuat::Slerp(vrState.rightHandRotation.Quaternion(), lastRightRotation.Quaternion(), DeltaTime).Rotator();
+		lastRightRotation = vrState.rightHandRotation;
+
+		this->Server_UpdateServerWithVRState(vrState);
 	}
-	if (rightHand != nullptr) {
-		FTransform rTrans = rightHand->GetRelativeTransform();
-		FVector rightHandPosition = rTrans.GetTranslation();
-		FRotator rightHandRotation = rTrans.GetRotation().Rotator();
-		vrState.rightHandPosition = rightHandPosition;
-		vrState.rightHandRotation = rightHandRotation;
-	}
-
-	FVector headPosDiff = vrState.headPosition - lastHeadPosition;
-	headPositionVelocities.Insert(headPosDiff / DeltaTime, 0);
-	headPositionVelocities.Pop();
-	vrState.headPositionVelocity = this->getVectorArrayAverage(headPositionVelocities);
-	lastHeadPosition = vrState.headPosition;
-
-	//FRotator headRotDiff = vrState.headRotation - lastHeadRotation;
-	//headRotationVelocities.Insert(headRotDiff / DeltaTime, 0);
-	//headRotationVelocities.Pop();
-	vrState.headAngularDiff = FQuat::Slerp(lastHeadRotation.Quaternion(), vrState.headRotation.Quaternion(), DeltaTime).Rotator();
-	//FQuat(headRotDiff).Slerp()
-	//vrState.headAngularDiff = this->getVectorArrayAverage(headRotationVelocities);
-	lastHeadRotation = vrState.headRotation;
-
-	FVector leftPosDiff = vrState.leftHandPosition - lastLeftPosition;
-	leftPositionVelocities.Insert(leftPosDiff / DeltaTime, 0);
-	leftPositionVelocities.Pop();
-	leftHandVelocity = this->getVectorArrayAverage(leftPositionVelocities);
-	vrState.leftHandPositionVelocity = leftHandVelocity;
-	lastLeftPosition = vrState.leftHandPosition;
-
-	//FVector leftRotDiff = vrState.leftHandRotation.Vector() - lastLeftRotation.Vector();
-	//leftRotationVelocities.Insert(leftRotDiff / DeltaTime, 0);
-	//leftRotationVelocities.Pop();
-	//vrState.leftHandAngularDiff = this->getVectorArrayAverage(leftRotationVelocities);
-	vrState.leftHandAngularDiff = FQuat::Slerp(vrState.leftHandRotation.Quaternion(), lastLeftRotation.Quaternion(), DeltaTime).Rotator();
-	lastLeftRotation = vrState.leftHandRotation;
-
-	FVector rightPosDiff = vrState.rightHandPosition - lastRightPosition;
-	rightPositionVelocities.Insert(rightPosDiff / DeltaTime, 0);
-	rightPositionVelocities.Pop();
-	rightHandVelocity = this->getVectorArrayAverage(rightPositionVelocities);
-	vrState.rightHandPositionVelocity = rightHandVelocity;
-	lastRightPosition = vrState.rightHandPosition;
-
-	//FVector rightRotDiff = vrState.rightHandRotation.Vector() - lastRightRotation.Vector();
-	//rightRotationVelocities.Insert(rightRotDiff / DeltaTime, 0);
-	//rightRotationVelocities.Pop();
-	//vrState.rightHandAngularDiff = this->getVectorArrayAverage(rightRotationVelocities);
-	vrState.rightHandAngularDiff = FQuat::Slerp(vrState.rightHandRotation.Quaternion(), lastRightRotation.Quaternion(), DeltaTime).Rotator();
-	lastRightRotation = vrState.rightHandRotation;
-
-	this->Server_UpdateServerWithVRState(vrState);
 }
 
 // Called to bind functionality to input
