@@ -44,17 +44,28 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
 	FVRState vrState;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_VrStateReplicated, Category = Replication)
+	FVRState vrStateReplicated;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Replication)
+	bool ReplicatedThisTick = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Customization, ReplicatedUsing = OnRep_Customization)
 	TArray<int32> Customization;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Customization")
 	void appearanceChange();
 	
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_UpdateServerWithVRState(FVRState state);
 
 private:
 
 	UFUNCTION()
 	void OnRep_Customization();
+
+	UFUNCTION()
+	void OnRep_VrStateReplicated();
 
 	FVector getVectorArrayAverage(TArray<FVector>);
 	FRotator getRotatorArrayAverage(TArray<FQuat>);
@@ -63,17 +74,17 @@ private:
 	//IMotionController* playerMotionControls;
 
 	FVector lastHeadPosition = FVector(0.f, 0.f, 0.f);
-	FQuat lastHeadRotation = FQuat(0.f, 0.f, 0.f, 0.f);
+	FRotator lastHeadRotation = FRotator(0.f, 0.f, 0.f);
 	FVector lastLeftPosition = FVector(0.f, 0.f, 0.f);
-	FQuat lastLeftRotation = FQuat(0.f, 0.f, 0.f, 0.f);
+	FRotator lastLeftRotation = FRotator(0.f, 0.f, 0.f);
 	FVector lastRightPosition = FVector(0.f, 0.f, 0.f);
-	FQuat lastRightRotation = FQuat(0.f, 0.f, 0.f, 0.f);
+	FRotator lastRightRotation = FRotator(0.f, 0.f, 0.f);
 	TArray<FVector> headPositionVelocities;
-	TArray<FQuat> headRotationVelocities;
+	TArray<FVector> headRotationVelocities;
 	TArray<FVector> leftPositionVelocities;
-	TArray<FQuat> leftRotationVelocities;
+	TArray<FVector> leftRotationVelocities;
 	TArray<FVector> rightPositionVelocities;
-	TArray<FQuat> rightRotationVelocities;
+	TArray<FVector> rightRotationVelocities;
 
 	UMotionControllerComponent* leftHand = nullptr;
 	UMotionControllerComponent* rightHand = nullptr;
