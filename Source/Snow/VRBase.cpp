@@ -154,7 +154,7 @@ void AVRBase::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 void AVRBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
 	DOREPLIFETIME(AVRBase, Customization);
-	DOREPLIFETIME(AVRBase, vrStateReplicated);
+	//DOREPLIFETIME(AVRBase, vrStateReplicated);
 }
 
 void AVRBase::OnRep_Customization() {
@@ -169,10 +169,16 @@ void AVRBase::OnRep_VrStateReplicated() {
 
 void AVRBase::Server_UpdateServerWithVRState_Implementation(FVRState state)
 {
-	vrStateReplicated = state;
-	ReplicatedThisTick = true;
-	// Do something here that modifies game state.
+	//this->vrStateReplicated = state;
+	//this->ReplicatedThisTick = true;
+	this->Multicast_BroadcastVRState(state);
 }
+void AVRBase::Multicast_BroadcastVRState_Implementation(FVRState state)
+{
+	this->vrStateReplicated = state;
+	this->ReplicatedThisTick = true;
+}
+
 
 bool AVRBase::Server_UpdateServerWithVRState_Validate(FVRState state)
 {

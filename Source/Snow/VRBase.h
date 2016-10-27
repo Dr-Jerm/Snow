@@ -44,7 +44,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
 	FVRState vrState;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_VrStateReplicated, Category = Replication)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Replication)
 	FVRState vrStateReplicated;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Replication)
@@ -56,8 +56,11 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Customization")
 	void appearanceChange();
 	
-	UFUNCTION(Server, Reliable, WithValidation)
+	UFUNCTION(Server, Unreliable, WithValidation)
 	void Server_UpdateServerWithVRState(FVRState state);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void Multicast_BroadcastVRState(FVRState state);
 
 private:
 
