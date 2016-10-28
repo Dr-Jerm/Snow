@@ -107,7 +107,10 @@ void AVRBase::Tick( float DeltaTime )
 		//FRotator headRotDiff = vrState.headRotation - lastHeadRotation;
 		//headRotationVelocities.Insert(headRotDiff / DeltaTime, 0);
 		//headRotationVelocities.Pop();
-		vrState.headAngularDiff = FQuat::Slerp(lastHeadRotation.Quaternion(), vrState.headRotation.Quaternion(), DeltaTime).Rotator();
+		//vrState.headAngularDiff = FQuat::Slerp(lastHeadRotation.Quaternion(), vrState.headRotation.Quaternion(), DeltaTime).Rotator();
+		FRotator headDelta = vrState.headRotation - lastHeadRotation;
+		//headDelta.Normalize();
+		vrState.headAngularDiff = (headDelta.Quaternion() / DeltaTime).Rotator();
 		//FQuat(headRotDiff).Slerp()
 		//vrState.headAngularDiff = this->getVectorArrayAverage(headRotationVelocities);
 		lastHeadRotation = vrState.headRotation;
@@ -123,7 +126,10 @@ void AVRBase::Tick( float DeltaTime )
 		//leftRotationVelocities.Insert(leftRotDiff / DeltaTime, 0);
 		//leftRotationVelocities.Pop();
 		//vrState.leftHandAngularDiff = this->getVectorArrayAverage(leftRotationVelocities);
-		vrState.leftHandAngularDiff = FQuat::Slerp(vrState.leftHandRotation.Quaternion(), lastLeftRotation.Quaternion(), DeltaTime).Rotator();
+		//vrState.leftHandAngularDiff = FQuat::Slerp(vrState.leftHandRotation.Quaternion(), lastLeftRotation.Quaternion(), DeltaTime).Rotator();
+		FRotator leftDelta = vrState.leftHandRotation - lastLeftRotation;
+		//leftDelta.Normalize();
+		vrState.leftHandAngularDiff = (leftDelta.Quaternion() / DeltaTime).Rotator();
 		lastLeftRotation = vrState.leftHandRotation;
 
 		FVector rightPosDiff = vrState.rightHandPosition - lastRightPosition;
@@ -137,7 +143,10 @@ void AVRBase::Tick( float DeltaTime )
 		//rightRotationVelocities.Insert(rightRotDiff / DeltaTime, 0);
 		//rightRotationVelocities.Pop();
 		//vrState.rightHandAngularDiff = this->getVectorArrayAverage(rightRotationVelocities);
-		vrState.rightHandAngularDiff = FQuat::Slerp(vrState.rightHandRotation.Quaternion(), lastRightRotation.Quaternion(), DeltaTime).Rotator();
+		//vrState.rightHandAngularDiff = FQuat::Slerp(vrState.rightHandRotation.Quaternion(), lastRightRotation.Quaternion(), DeltaTime).Rotator();
+		FRotator rightDelta = vrState.rightHandRotation - lastRightRotation;
+		//rightDelta.Normalize();
+		vrState.rightHandAngularDiff = (rightDelta.Quaternion() / DeltaTime).Rotator();
 		lastRightRotation = vrState.rightHandRotation;
 
 		this->Server_UpdateServerWithVRState(vrState);
