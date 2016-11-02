@@ -12,8 +12,13 @@ UCLASS()
 class SNOW_API ASnowGameMode : public AGameMode
 {
 	GENERATED_BODY()
-	
-	
+
+public:
+
+	virtual void HandleSeamlessTravelPlayer(AController *& C) override;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = ServerTravel)
+	void SeamlessTravelPlayer(AController* Controller);
 	
 	
 };

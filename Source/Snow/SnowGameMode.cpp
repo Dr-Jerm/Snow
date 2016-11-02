@@ -4,5 +4,8 @@
 #include "SnowGameMode.h"
 
 
-
+void ASnowGameMode::HandleSeamlessTravelPlayer(AController *& Controller) {
+	Super::HandleSeamlessTravelPlayer(Controller);
+	SeamlessTravelPlayer(Controller);
+}
 
