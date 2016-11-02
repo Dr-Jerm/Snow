@@ -459,6 +459,11 @@ void StartPIE()
 
 void Tick()
 {
+#if WITH_EDITOR
+	FSubstanceCoreModule& SubstanceModule = FModuleManager::LoadModuleChecked<FSubstanceCoreModule>(TEXT("SubstanceCore"));
+	const bool PIE = SubstanceModule.isPie();
+#endif
+
 	//update outputs
 	Substance::List<output_inst_t*> Outputs =
 		RenderCallbacks::getComputedOutputs(!GIsEditor);
@@ -484,44 +489,41 @@ void Tick()
 	{
 		// Refresh viewports
 		FEditorSupportDelegates::RedrawAllViewports.Broadcast();
-		ASyncRunID = 0;
 	}
 #endif
 
 	//check if our last async job has completed
-	if (!GIsEditor && CurrentRenderQueue.Num() && ASyncRunID != 0 && !GSubstanceRenderer->isPending(ASyncRunID) && RenderCallbacks::isOutputQueueEmpty())
+	if (CurrentRenderQueue.Num() && ASyncRunID != 0 && !GSubstanceRenderer->isPending(ASyncRunID) && RenderCallbacks::isOutputQueueEmpty())
 	{
-		ASyncRunID = 0;
-
-		// free some memory by reseting the engine each batch of rendering
-		GSubstanceRenderer = TSharedPtr<Substance::Renderer>(new Substance::Renderer());
-		GSubstanceRenderer->setRenderCallbacks(gCallbacks.Get());
-
-		for (auto graph = CurrentRenderQueue.itfront(); graph; ++graph)
+#if WITH_EDITOR
+		//don't process async commands while outside of play mode
+		if (PIE)
 		{
-			check(*graph != NULL);
-			check((*graph)->ParentInstance->IsValidLowLevel());
-			check((*graph)->ParentInstance->Parent->IsValidLowLevel());
-			check((*graph)->ParentInstance->Parent->SubstancePackage != NULL);
+#endif
+			ASyncRunID = 0;
 
-			(*graph)->ParentInstance->Parent->SubstancePackage->ConditionnalClearLinkData();
+			for (auto graph = CurrentRenderQueue.itfront(); graph; ++graph)
+			{
+				check(*graph != NULL);
+				check((*graph)->ParentInstance->IsValidLowLevel());
+				check((*graph)->ParentInstance->Parent->IsValidLowLevel());
+				check((*graph)->ParentInstance->Parent->SubstancePackage != NULL);
+
+				(*graph)->ParentInstance->Parent->SubstancePackage->ConditionnalClearLinkData();
+			}
+
+			GlobalInstanceCompletedCount += CurrentRenderQueue.Num();
+			CurrentRenderQueue.Empty();	
+#if WITH_EDITOR
 		}
-
-		GlobalInstanceCompletedCount += CurrentRenderQueue.Num();
-		CurrentRenderQueue.Empty();	
+#endif
 	}
 	
-#if WITH_EDITOR
-	//push async substances to renderer
-	if (AsyncQueue.Num() && 0 == ASyncRunID)
-	{
-		bool SmthgPushed = GSubstanceRenderer->push(AsyncQueue);
-		AsyncQueue.Empty();
-#else // WITH_EDITOR
 	if (AsyncQueue.Num() && !CurrentRenderQueue.Num())
 	{
 		// limit the number of substances being rendered at the same time
 		// to save some memory
+		// TODO: This number is arbitrary! Expose it in project settings or remove
 		const int BatchSize = 4;
 
 		while (AsyncQueue.Num() != 0 && CurrentRenderQueue.Num() <= BatchSize)
@@ -529,24 +531,14 @@ void Tick()
 			CurrentRenderQueue.AddUnique(AsyncQueue.pop());
 		}
 
-		bool SmthgPushed = GSubstanceRenderer->push(CurrentRenderQueue);
+		GSubstanceRenderer->push(CurrentRenderQueue);
 
-		if (!SmthgPushed)
-		{
-			CurrentRenderQueue.Empty();
-		}
-
-#endif //WITH_EDITOR
-
-		if (SmthgPushed)
-		{
-			ASyncRunID = GSubstanceRenderer->run(
-				Substance::Renderer::Run_Asynchronous |
-				Substance::Renderer::Run_Replace |
-				Substance::Renderer::Run_First |
-				Substance::Renderer::Run_PreserveRun
-				);
-		}		
+		ASyncRunID = GSubstanceRenderer->run(
+			Substance::Renderer::Run_Asynchronous |
+			Substance::Renderer::Run_Replace |
+			Substance::Renderer::Run_First |
+			Substance::Renderer::Run_PreserveRun
+			);
 	}
 
 	Substance::Helpers::PerformDelayedDeletion();
