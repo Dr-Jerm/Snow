@@ -21,9 +21,9 @@ class UFindSessionsCallbackProxyAdvanced : public UOnlineBlueprintCallProxyBase
 
 	// Searches for advertised sessions with the default online subsystem and includes an array of filters
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "WorldContextObject", AutoCreateRefTerm="Filters"), Category = "Online|AdvancedSessions")
-	static UFindSessionsCallbackProxyAdvanced* FindSessionsAdvanced(UObject* WorldContextObject, class APlayerController* PlayerController, int32 MaxResults, bool bUseLAN, TEnumAsByte<EBPServerPresenceSearchType::Type> ServerTypeToSearch, const TArray<FSessionsSearchSetting> &Filters);
+	static UFindSessionsCallbackProxyAdvanced* FindSessionsAdvanced(UObject* WorldContextObject, class APlayerController* PlayerController, int32 MaxResults, bool bUseLAN, EBPServerPresenceSearchType ServerTypeToSearch, const TArray<FSessionsSearchSetting> &Filters, bool bEmptyServersOnly = false, bool bNonEmptyServersOnly = false, bool bSecureServersOnly = false, int MinSlotsAvailable = 0);
 
-	static bool CompareVariants(const FVariantData &A, const FVariantData &B, EOnlineComparisonOpRedux::Type Comparator);
+	static bool CompareVariants(const FVariantData &A, const FVariantData &B, EOnlineComparisonOpRedux Comparator);
 	
 	// Filters an array of session results by the given search parameters, returns a new array with the filtered results
 	UFUNCTION(BluePrintCallable, meta = (Category = "Online|AdvancedSessions"))
@@ -68,13 +68,25 @@ private:
 	bool bUseLAN;
 
 	// Whether or not to search for dedicated servers
-	EBPServerPresenceSearchType::Type ServerSearchType;
+	EBPServerPresenceSearchType ServerSearchType;
 
 	// Maximum number of results to return
 	int MaxResults;
 
 	// Store extra settings
 	TArray<FSessionsSearchSetting> SearchSettings;
+
+	// Search for empty servers only
+	bool bEmptyServersOnly;
+
+	// Search for non empty servers only
+	bool bNonEmptyServersOnly;
+
+	// Search for secure servers only
+	bool bSecureServersOnly;
+
+	// Min slots requires to search
+	int MinSlotsAvailable;
 
 	// The world context object in which this call is taking place
 	UObject* WorldContextObject;
