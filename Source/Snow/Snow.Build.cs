@@ -25,6 +25,7 @@ public class Snow : ModuleRules
 
         /* 3rd Party Plugins */
         PrivateDependencyModuleNames.AddRange(new string[] { "VaRestPlugin" });
+        //PrivateDependencyModuleNames.AddRange(new string[] { "AdvancedSessions" });
 
 
 

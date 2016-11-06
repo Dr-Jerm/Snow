@@ -9,7 +9,7 @@ public class SnowTarget : TargetRules
 	{
 		Type = TargetType.Game;
         bUsesSteam = true;
-	}
+    }
 
 	//
 	// TargetRules interface.

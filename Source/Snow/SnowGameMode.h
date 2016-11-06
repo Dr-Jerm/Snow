@@ -3,6 +3,12 @@
 #pragma once
 
 #include "GameFramework/GameMode.h"
+#include "OnlineSessionInterface.h"
+#include "OnlineSessionSettings.h"
+#include "OnlineSubsystem.h"
+#include "OnlineSubsystemImpl.h"
+#include "OnlineSubsystemUtils.h"
+#include "OnlineSubsystemUtilsModule.h"
 #include "SnowGameMode.generated.h"
 
 /**
@@ -19,6 +25,11 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = ServerTravel)
 	void SeamlessTravelPlayer(AController* Controller);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Hosting")
+	void HostDedicatedMapRequest(const FString &level);
 	
+	UFUNCTION(BlueprintCallable, Category = "Hosting")
+	void HostDedicatedServer(FString level);
 	
 };
