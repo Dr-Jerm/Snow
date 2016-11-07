@@ -15,23 +15,3 @@ void ASnowGameMode::HandleSeamlessTravelPlayer(AController *& Controller) {
 	SeamlessTravelPlayer(Controller);
 }
 
-void ASnowGameMode::HostDedicatedServer(FString level) {
-	UWorld* World = GetWorld();
-	IOnlineSessionPtr SessionInt = Online::GetSessionInterface(World);
-
-	FOnlineSessionSettings Settings;
-	Settings.NumPublicConnections = 6;
-	Settings.bShouldAdvertise = true;
-	Settings.bAllowJoinInProgress = true;
-	Settings.bAllowInvites = true;
-	Settings.bIsLANMatch = false;
-	Settings.bUsesPresence = false;
-	Settings.bAllowJoinViaPresence = false;
-	Settings.bIsDedicated = true;
-
-	UE_LOG(LogTemp, Log, TEXT("Creating Dedicated Session"));
-	SessionInt->CreateSession(0, GameSessionName, Settings);
-	HostDedicatedMapRequest(level);
-	return;
-}
-
