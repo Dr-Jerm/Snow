@@ -20,5 +20,4 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = ServerTravel)
 	void SeamlessTravelPlayer(AController* Controller);
 	
-	
 };

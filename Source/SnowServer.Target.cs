@@ -9,7 +9,7 @@ public class SnowServerTarget : TargetRules
 	{
 		Type = TargetType.Server;
         bUsesSteam = true;
-	}
+    }
 
 	//
 	// TargetRules interface.

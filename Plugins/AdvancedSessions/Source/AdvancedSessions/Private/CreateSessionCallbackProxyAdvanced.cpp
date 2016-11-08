@@ -53,9 +53,14 @@ void UCreateSessionCallbackProxyAdvanced::Activate()
 			Settings.bShouldAdvertise = true;
 			Settings.bAllowJoinInProgress = true;
 			Settings.bIsLANMatch = bUseLAN;
-			Settings.bUsesPresence = bUsePresence;
 			Settings.bAllowJoinViaPresence = true;
 			Settings.bIsDedicated = bDedicatedServer;
+
+			if (bDedicatedServer)
+				Settings.bUsesPresence = false;
+			else
+				Settings.bUsesPresence = bUsePresence;
+
 			Settings.bAllowJoinViaPresenceFriendsOnly = bAllowJoinViaPresenceFriendsOnly;
 			Settings.bAntiCheatProtected = bAntiCheatProtected;
 			Settings.bUsesStats = bUsesStats;
@@ -68,13 +73,13 @@ void UCreateSessionCallbackProxyAdvanced::Activate()
 			for (int i = 0; i < ExtraSettings.Num(); i++)
 			{
 				ExtraSetting.Data = ExtraSettings[i].Data;
-				//		ViaOnlineServiceAndPing
+				//	ViaOnlineServiceAndPing
 				ExtraSetting.AdvertisementType = EOnlineDataAdvertisementType::ViaOnlineService;
 				Settings.Settings.Add(ExtraSettings[i].Key, ExtraSetting);
 			}
 			
-
-			if (PlayerControllerWeakPtr.IsValid() && Helper.UserID.IsValid())
+			
+			if (!bDedicatedServer && PlayerControllerWeakPtr.IsValid() && Helper.UserID.IsValid())
 				Sessions->CreateSession(*Helper.UserID, GameSessionName, Settings);
 			else
 				Sessions->CreateSession(0, GameSessionName, Settings);
