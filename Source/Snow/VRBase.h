@@ -29,12 +29,6 @@ public:
 
 	IHeadMountedDisplay* HMD = nullptr;
 
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
-	//FVector currentOriginPosition;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
-	//FRotator currentOriginRotation;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = VR)
 	FVector leftHandVelocity;
 
@@ -46,9 +40,18 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Replication)
 	FVRState vrStateReplicated;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Replication)
+	TArray<FVRState> vrStateBuffer;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Replication")
+	void vrStateUpdate();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Replication)
 	bool ReplicatedThisTick = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Replication)
+	float lastReplicationDelta = 0.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Customization, ReplicatedUsing = OnRep_Customization)
 	TArray<int32> Customization;
@@ -67,14 +70,12 @@ private:
 	UFUNCTION()
 	void OnRep_Customization();
 
-	UFUNCTION()
-	void OnRep_VrStateReplicated();
-
 	FVector getVectorArrayAverage(TArray<FVector>);
 	FRotator getRotatorArrayAverage(TArray<FQuat>);
 
 	int32 velocityTicks = 2;
-	//IMotionController* playerMotionControls;
+	int32 replicatedBufferSize = 3;
+	float lastReplicationTime = 0.f;
 
 	FVector lastHeadPosition = FVector(0.f, 0.f, 0.f);
 	FRotator lastHeadRotation = FRotator(0.f, 0.f, 0.f);

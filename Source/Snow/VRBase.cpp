@@ -23,6 +23,7 @@ AVRBase::AVRBase()
 	this->leftRotationVelocities.Init(FVector(0.f, 0.f, 0.f), velocityTicks);
 	this->rightPositionVelocities.Init(FVector(0.f, 0.f, 0.f), velocityTicks);
 	this->rightRotationVelocities.Init(FVector(0.f, 0.f, 0.f), velocityTicks);
+	this->vrStateBuffer.Init(FVRState(), this->replicatedBufferSize);
 	bReplicates = true;
 }
 
@@ -32,18 +33,6 @@ void AVRBase::BeginPlay()
 	Super::BeginPlay();
 
 	HMD = (IHeadMountedDisplay*)(GEngine->HMDDevice.Get());
-	//GetDefaultSubobjectByName<UMotionControllerComponent>(TEXT("LeftHand"));
-	//leftHand->Hand = EControllerHand::Left;
-
-
-	//TArray<IMotionController*> controllers = (TArray<IMotionController*>)GEngine->MotionControllerDevices;
-	
-
-	/*IMotionController::GetControllerOrientationAndPosition*/
-
-	//if (controllers.Num() > 0) {
-	//	playerMotionControls = controllers[0];
-	//}
 
 	TArray<UMotionControllerComponent*> comps;
 
@@ -80,7 +69,6 @@ void AVRBase::Tick( float DeltaTime )
 		FVector tempPosition;
 		HMD->GetCurrentOrientationAndPosition(tempRotator, tempPosition);
 		vrState.headPosition = tempPosition;
-		//vrState.headPosition = tempPosition + localPosition;
 		vrState.headRotation = tempRotator.Rotator();
 
 		if (leftHand != nullptr) {
@@ -104,15 +92,8 @@ void AVRBase::Tick( float DeltaTime )
 		vrState.headPositionVelocity = this->getVectorArrayAverage(headPositionVelocities);
 		lastHeadPosition = vrState.headPosition;
 
-		//FRotator headRotDiff = vrState.headRotation - lastHeadRotation;
-		//headRotationVelocities.Insert(headRotDiff / DeltaTime, 0);
-		//headRotationVelocities.Pop();
-		//vrState.headAngularDiff = FQuat::Slerp(lastHeadRotation.Quaternion(), vrState.headRotation.Quaternion(), DeltaTime).Rotator();
 		FRotator headDelta = vrState.headRotation - lastHeadRotation;
-		//headDelta.Normalize();
 		vrState.headAngularDiff = (headDelta.Quaternion() / DeltaTime).Rotator();
-		//FQuat(headRotDiff).Slerp()
-		//vrState.headAngularDiff = this->getVectorArrayAverage(headRotationVelocities);
 		lastHeadRotation = vrState.headRotation;
 
 		FVector leftPosDiff = vrState.leftHandPosition - lastLeftPosition;
@@ -122,13 +103,7 @@ void AVRBase::Tick( float DeltaTime )
 		vrState.leftHandPositionVelocity = leftHandVelocity;
 		lastLeftPosition = vrState.leftHandPosition;
 
-		//FVector leftRotDiff = vrState.leftHandRotation.Vector() - lastLeftRotation.Vector();
-		//leftRotationVelocities.Insert(leftRotDiff / DeltaTime, 0);
-		//leftRotationVelocities.Pop();
-		//vrState.leftHandAngularDiff = this->getVectorArrayAverage(leftRotationVelocities);
-		//vrState.leftHandAngularDiff = FQuat::Slerp(vrState.leftHandRotation.Quaternion(), lastLeftRotation.Quaternion(), DeltaTime).Rotator();
 		FRotator leftDelta = vrState.leftHandRotation - lastLeftRotation;
-		//leftDelta.Normalize();
 		vrState.leftHandAngularDiff = (leftDelta.Quaternion() / DeltaTime).Rotator();
 		lastLeftRotation = vrState.leftHandRotation;
 
@@ -139,13 +114,7 @@ void AVRBase::Tick( float DeltaTime )
 		vrState.rightHandPositionVelocity = rightHandVelocity;
 		lastRightPosition = vrState.rightHandPosition;
 
-		//FVector rightRotDiff = vrState.rightHandRotation.Vector() - lastRightRotation.Vector();
-		//rightRotationVelocities.Insert(rightRotDiff / DeltaTime, 0);
-		//rightRotationVelocities.Pop();
-		//vrState.rightHandAngularDiff = this->getVectorArrayAverage(rightRotationVelocities);
-		//vrState.rightHandAngularDiff = FQuat::Slerp(vrState.rightHandRotation.Quaternion(), lastRightRotation.Quaternion(), DeltaTime).Rotator();
 		FRotator rightDelta = vrState.rightHandRotation - lastRightRotation;
-		//rightDelta.Normalize();
 		vrState.rightHandAngularDiff = (rightDelta.Quaternion() / DeltaTime).Rotator();
 		lastRightRotation = vrState.rightHandRotation;
 
@@ -168,24 +137,22 @@ void AVRBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifeti
 
 void AVRBase::OnRep_Customization() {
 	this->appearanceChange();
-	//USnowHTTP::Instance()->MyHttpCall(NULL);
-	//USnowHTTP::MyHttpCall();
-}
-
-void AVRBase::OnRep_VrStateReplicated() {
-	ReplicatedThisTick = true;
 }
 
 void AVRBase::Server_UpdateServerWithVRState_Implementation(FVRState state)
 {
-	//this->vrStateReplicated = state;
-	//this->ReplicatedThisTick = true;
 	this->Multicast_BroadcastVRState(state);
 }
 void AVRBase::Multicast_BroadcastVRState_Implementation(FVRState state)
 {
+	float realtimeSeconds = UGameplayStatics::GetRealTimeSeconds(GetWorld());
+	this->lastReplicationDelta = realtimeSeconds - this->lastReplicationTime;
 	this->vrStateReplicated = state;
 	this->ReplicatedThisTick = true;
+	this->vrStateBuffer.Insert(state, 0);
+	this->vrStateBuffer.Pop();
+	this->vrStateUpdate();
+	this->lastReplicationTime = realtimeSeconds;
 }
 
 
