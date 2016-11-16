@@ -307,14 +307,12 @@ void USubstanceTexture2D::PostDuplicate(bool bDuplicateForPIE)
 }
 
 
-SIZE_T USubstanceTexture2D::GetResourceSize(EResourceSizeMode::Type Mode)
+void USubstanceTexture2D::GetResourceSizeEx(FResourceSizeEx& CumulativeResourceSize)
 {
-	SIZE_T sum = 0;
 	for (auto it = Mips.CreateConstIterator(); it; ++it)
 	{
-		sum += it->BulkData.GetBulkDataSize();
+		CumulativeResourceSize.AddDedicatedSystemMemoryBytes(it->BulkData.GetBulkDataSize());
 	}
-	return sum;
 }
 
 

@@ -32,7 +32,7 @@ class USubstanceTexture2D : public UTexture2DDynamic
 	virtual void BeginDestroy() override;
 	virtual void PostLoad() override;
 	virtual void PostDuplicate(bool bDuplicateForPIE) override;
-	virtual SIZE_T GetResourceSize(EResourceSizeMode::Type Mode) override;
+	virtual void GetResourceSizeEx(FResourceSizeEx& CumulativeResourceSize) override;
 	// End UObject interface.
 
 	bool CanEditChange(const UProperty* InProperty) const;

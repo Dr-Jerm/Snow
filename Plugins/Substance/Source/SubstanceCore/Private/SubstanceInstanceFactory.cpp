@@ -201,7 +201,7 @@ void USubstanceInstanceFactory::PostDuplicate(bool bDuplicateForPIE)
 }
 
 
-SIZE_T USubstanceInstanceFactory::GetResourceSize(EResourceSizeMode::Type Mode)
+void USubstanceInstanceFactory::GetResourceSizeEx(FResourceSizeEx& CumulativeResourceSize)
 {
 	if (SubstancePackage)
 	{
@@ -209,8 +209,6 @@ SIZE_T USubstanceInstanceFactory::GetResourceSize(EResourceSizeMode::Type Mode)
 			static_cast<Substance::Details::LinkDataAssembly*>(
 			SubstancePackage->getLinkData().get());
 
-		return linkdata->getSize();
+		CumulativeResourceSize.AddDedicatedSystemMemoryBytes(linkdata->getSize());
 	}
-	
-	return 0;
 }
