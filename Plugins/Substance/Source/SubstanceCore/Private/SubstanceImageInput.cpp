@@ -239,11 +239,12 @@ void USubstanceImageInput::Serialize(FArchive& Ar)
 
 FString USubstanceImageInput::GetDesc()
 {
-	return FString::Printf( TEXT("%dx%d (%d kB)"), SizeX, SizeY, GetResourceSize(EResourceSizeMode::Exclusive)/1024);
+	return FString::Printf( TEXT("%dx%d (%d kB)"), SizeX, SizeY, GetResourceSizeBytes(EResourceSizeMode::Exclusive)/1024);
 }
 
 
-SIZE_T USubstanceImageInput::GetResourceSize(EResourceSizeMode::Type)
+void USubstanceImageInput::GetResourceSizeEx(FResourceSizeEx& CumulativeResourceSize)
 {
-	return ImageRGB.GetBulkDataSize() + ImageA.GetBulkDataSize();
+	CumulativeResourceSize.AddDedicatedSystemMemoryBytes(ImageRGB.GetBulkDataSize());
+	CumulativeResourceSize.AddDedicatedSystemMemoryBytes(ImageA.GetBulkDataSize());
 }

@@ -54,5 +54,5 @@ public:
 
 	virtual void Serialize(FArchive& Ar) override;
 	virtual FString GetDesc() override;
-	virtual SIZE_T GetResourceSize(EResourceSizeMode::Type) override;
+	virtual void GetResourceSizeEx(FResourceSizeEx& CumulativeResourceSize) override;
 };

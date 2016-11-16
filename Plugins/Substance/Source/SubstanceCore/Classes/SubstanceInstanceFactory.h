@@ -44,5 +44,5 @@ public:
 
 	bool ShouldCacheOutput() const;
 
-	virtual SIZE_T GetResourceSize(EResourceSizeMode::Type Mode) override;
+	virtual void GetResourceSizeEx(FResourceSizeEx& CumulativeResourceSize) override;
 };

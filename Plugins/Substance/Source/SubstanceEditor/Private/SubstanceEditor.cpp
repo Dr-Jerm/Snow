@@ -61,24 +61,24 @@ void FSubstanceEditorCommands::RegisterCommands()
 	UI_COMMAND(ResetDefaultValues, "Reset", "Reset graph instance values to default.", EUserInterfaceActionType::Button, FInputGesture());
 }
 
-void FSubstanceEditor::RegisterTabSpawners(const TSharedRef<class FTabManager>& TabManager)
+void FSubstanceEditor::RegisterTabSpawners(const TSharedRef<class FTabManager>& tabManager)
 {
-	FAssetEditorToolkit::RegisterTabSpawners(TabManager);
+	FAssetEditorToolkit::RegisterTabSpawners(tabManager);
 
 	const IWorkspaceMenuStructure& MenuStructure = WorkspaceMenu::GetMenuStructure();
 
-	TabManager->RegisterTabSpawner( 
+	tabManager->RegisterTabSpawner( 
 		SubstanceTabId,
 		FOnSpawnTab::CreateSP(this, &FSubstanceEditor::SpawnTab_SubstanceEditor))
 			.SetDisplayName( LOCTEXT("SubstanceEditorTab", "SubstanceEditor"))
 			.SetGroup( MenuStructure.GetStructureRoot());
 }
 
-void FSubstanceEditor::UnregisterTabSpawners(const TSharedRef<class FTabManager>& TabManager)
+void FSubstanceEditor::UnregisterTabSpawners(const TSharedRef<class FTabManager>& tabManager)
 {
-	FAssetEditorToolkit::UnregisterTabSpawners(TabManager);
+	FAssetEditorToolkit::UnregisterTabSpawners(tabManager);
 
-	TabManager->UnregisterTabSpawner( SubstanceTabId );
+	tabManager->UnregisterTabSpawner( SubstanceTabId );
 }
 
 FSubstanceEditor::~FSubstanceEditor()
