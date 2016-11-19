@@ -25,6 +25,7 @@ void UConfigLibrary::ReadConfigStringValue(const FString FileNameWithPath, const
 	value = ValueReceived;
 	return;
 }
+
 void UConfigLibrary::ReadConfigBoolValue(const FString FileNameWithPath, const FString VariableName, bool &value) {
 	value = false;
 	if (!GConfig) return;
@@ -41,6 +42,23 @@ void UConfigLibrary::ReadConfigBoolValue(const FString FileNameWithPath, const F
 		);
 
 	value = ValueReceived;
+	return;
+}
+void UConfigLibrary::WriteConfigBoolValue(const FString FileNameWithPath, const FString VariableName, bool value) {
+	if (!GConfig) return;
+
+	const TCHAR* path = *FileNameWithPath;
+	const TCHAR* name = *VariableName;
+
+	bool ValueReceived = false;
+	GConfig->SetBool(
+		path,
+		name,
+		value,
+		GEngineIni
+		);
+
+	GConfig->Flush(false, GGameIni);
 	return;
 }
 

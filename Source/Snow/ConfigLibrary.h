@@ -22,6 +22,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "ConfigLibrary")
 	static void ReadConfigBoolValue(const FString FileNameWithPath, const FString VariableName, bool &value);
 
+	UFUNCTION(BlueprintCallable, Category = "ConfigLibrary")
+	static void WriteConfigBoolValue(const FString FileNameWithPath, const FString VariableName, bool value);
+
 	UFUNCTION(BlueprintPure, Category = "ConfigLibrary")
 	static void ReadConfigFloatValue(const FString FileNameWithPath, const FString VariableName, float &value);
 
