@@ -31,7 +31,7 @@ class SNOW_API USteamGameInstance : public UAdvancedFriendsGameInstance
 public:
 	USteamGameInstance(const FObjectInitializer& ObjectInitializer);
 
-	TSharedPtr<class FOnlineSessionSettings> Settings;
+	//TSharedPtr<class FOnlineSessionSettings> Settings;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Hosting")
 	void HostDedicatedMapRequest(const FString &level);
