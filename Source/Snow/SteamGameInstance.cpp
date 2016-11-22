@@ -40,6 +40,7 @@ bool USteamGameInstance::HostDedicatedServer(FString level, FName sessionName) {
 			Settings.bAllowJoinViaPresence = false;
 			Settings.bIsDedicated = true;
 			Settings.Set(SETTING_MAPNAME, level, EOnlineDataAdvertisementType::ViaOnlineService);
+			Settings.Set(SETTING_CUSTOMSEARCHINT1, 0, EOnlineDataAdvertisementType::ViaOnlineService);
 
 			UE_LOG(LogTemp, Log, TEXT("Creating Dedicated Session"));
 			// Set the delegate to the Handle of the SessionInterface
