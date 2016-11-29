@@ -8,6 +8,7 @@
 #include "OnlineSubsystemImpl.h"
 #include "OnlineSubsystemUtils.h"
 #include "OnlineSubsystemUtilsModule.h"
+#include "SnowGameMode.h"
 
 USteamGameInstance::USteamGameInstance(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -29,36 +30,39 @@ bool USteamGameInstance::HostDedicatedServer(FString level, FName sessionName) {
 
 		if (SessionInt.IsValid())
 		{
-			FOnlineSessionSettings Settings;
-			Settings.NumPublicConnections = 6;
-			Settings.NumPrivateConnections = 0;
-			Settings.bShouldAdvertise = true;
-			Settings.bAllowJoinInProgress = true;
-			Settings.bAllowInvites = true;
-			Settings.bIsLANMatch = false;
-			Settings.bUsesPresence = false;
-			Settings.bAllowJoinViaPresence = false;
-			Settings.bIsDedicated = true;
-			Settings.Set(SETTING_MAPNAME, level, EOnlineDataAdvertisementType::ViaOnlineService);
-			Settings.Set(SETTING_CUSTOMSEARCHINT1, 0, EOnlineDataAdvertisementType::ViaOnlineService);
+			//FOnlineSessionSettings Settings;
+			ASnowGameMode* MyGM = Cast<ASnowGameMode>(GetWorld()->GetAuthGameMode());
 
-			UE_LOG(LogTemp, Log, TEXT("Creating Dedicated Session"));
-			// Set the delegate to the Handle of the SessionInterface
-			OnCreateSessionCompleteDelegateHandle = SessionInt->AddOnCreateSessionCompleteDelegate_Handle(OnCreateSessionCompleteDelegate);
-			
-			//HostDedicatedMapRequest(level);
-			return SessionInt->CreateSession(0, sessionName, Settings);
+			if (MyGM) {
+				Settings = MakeShareable(new FOnlineSessionSettings());
+				Settings->Set(SETTING_GAMEMODE, FString(*MyGM->GetName()), EOnlineDataAdvertisementType::ViaOnlineService);
+				Settings->Set(SETTING_MAPNAME, GetWorld()->GetMapName(), EOnlineDataAdvertisementType::ViaOnlineService);
+				Settings->Set(SETTING_MATCHING_HOPPER, FString("Deathmatch"), EOnlineDataAdvertisementType::DontAdvertise);
+				Settings->Set(SETTING_MATCHING_TIMEOUT, 120.0f, EOnlineDataAdvertisementType::ViaOnlineService);
+				Settings->Set(SETTING_SESSION_TEMPLATE_NAME, FString("GameSession"), EOnlineDataAdvertisementType::DontAdvertise);
+				Settings->NumPublicConnections = this->MaxPlayers;
+				Settings->NumPrivateConnections = 0;
+				Settings->bShouldAdvertise = true;
+				Settings->bAllowJoinInProgress = true;
+				Settings->bAllowInvites = true;
+				Settings->bIsLANMatch = false;
+				Settings->bUsesPresence = false;
+				Settings->bAllowJoinViaPresence = false;
+				Settings->bIsDedicated = true;
+
+				UE_LOG(LogTemp, Log, TEXT("Creating Dedicated Session"));
+				// Set the delegate to the Handle of the SessionInterface
+				OnCreateSessionCompleteDelegateHandle = SessionInt->AddOnCreateSessionCompleteDelegate_Handle(OnCreateSessionCompleteDelegate);
+
+				//HostDedicatedMapRequest(level);
+				return SessionInt->CreateSession(0, sessionName, *Settings);
+			}
 		}
 	}
-	UE_LOG(LogTemp, Error, TEXT("Creating Dedicated Session Failed. OnlineSubsystem not valid."));
+	FString error = "Creating Dedicated Session Failed. OnlineSubsystem not valid.";
+	UE_LOG(LogTemp, Error, TEXT("%s"), *error);
+	this->HostDedicatedFailed(error);
 	return false;
-}
-
-void USteamGameInstance::StartDedicatedSession() {
-	UWorld* World = GetWorld();
-	IOnlineSessionPtr SessionInt = Online::GetSessionInterface(World);
-	SessionInt->StartSession(GameSessionName);
-	return;
 }
 
 void USteamGameInstance::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful)
@@ -85,7 +89,9 @@ void USteamGameInstance::OnCreateSessionComplete(FName SessionName, bool bWasSuc
 				SessionInt->StartSession(SessionName);
 			}
 			else {
-				UE_LOG(LogTemp, Error, TEXT("Creating Dedicated Session Failed. Creating Session was not successful."));
+				FString error = "Creating Dedicated Session Failed. Creating Session was not successful.";
+				UE_LOG(LogTemp, Error, TEXT("%s"), *error);
+				this->HostDedicatedFailed(error);
 			}
 		}
 	}
@@ -108,14 +114,14 @@ void USteamGameInstance::OnStartOnlineGameComplete(FName SessionName, bool bWasS
 		}
 	}
 
-	// If the start was successful, we can open a NewMap if we want. Make sure to use "listen" as a parameter!
-	if (bWasSuccessful)
-	{
-		//FString map;
-		//Settings->Get(SETTING_MAPNAME, *map);
+	if (bWasSuccessful) {
+
+		this->HostDedicatedSuccess();
 		UGameplayStatics::OpenLevel(GetWorld(), "BRL_rag", true, "listen");
 	}
 	else {
-		UE_LOG(LogTemp, Error, TEXT("Creating Dedicated Session Failed. Starting Session was not successful."));
+		FString error = "Creating Dedicated Session Failed. Starting Session was not successful.";
+		UE_LOG(LogTemp, Error, TEXT("%s"), *error);
+		this->HostDedicatedFailed(error);
 	}
 }

@@ -31,16 +31,20 @@ class SNOW_API USteamGameInstance : public UAdvancedFriendsGameInstance
 public:
 	USteamGameInstance(const FObjectInitializer& ObjectInitializer);
 
-	//TSharedPtr<class FOnlineSessionSettings> Settings;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Game)
+	int32 MaxPlayers = 6;
+
+	TSharedPtr<class FOnlineSessionSettings> Settings;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Hosting")
-	void HostDedicatedMapRequest(const FString &level);
+	void HostDedicatedSuccess();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Hosting")
+	void HostDedicatedFailed(const FString &error);
 
 	UFUNCTION(BlueprintCallable, Category = "Hosting")
 	bool HostDedicatedServer(FString level, FName sessionName);
 
-	UFUNCTION(BlueprintCallable, Category = "Hosting")
-	void StartDedicatedSession();
 
 	/**
 	*	Function fired when a session create request has completed
@@ -57,6 +61,8 @@ public:
 	*	@param bWasSuccessful true if the async action completed without error, false if there was an error
 	*/
 	void OnStartOnlineGameComplete(FName SessionName, bool bWasSuccessful);
+
+
 
 private:
 
