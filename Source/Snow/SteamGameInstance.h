@@ -34,6 +34,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Game)
 	int32 MaxPlayers = 6;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hosting")
+	FString localIp;
+
 	TSharedPtr<class FOnlineSessionSettings> Settings;
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Hosting")
