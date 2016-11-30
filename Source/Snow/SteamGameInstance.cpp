@@ -2,8 +2,6 @@
 
 #include "Snow.h"
 #include "SteamGameInstance.h"
-#include "Networking.h"
-#include "SocketSubsystem.h"
 #include "OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
 #include "OnlineSubsystem.h"
@@ -89,15 +87,6 @@ void USteamGameInstance::OnCreateSessionComplete(FName SessionName, bool bWasSuc
 
 				// Our StartSessionComplete delegate should get called after this
 				SessionInt->StartSession(SessionName);
-
-				bool canBind = false;
-				TSharedRef<FInternetAddr> localIpAddr = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->GetLocalHostAddr(*GLog, canBind);
-
-				if (localIpAddr->IsValid())
-				{
-					localIp = localIpAddr->ToString(false); // if you want to append the port (true) or not (false).
-					UE_LOG(LogTemp, Log, TEXT("Session started on %s"), *localIp);
-				}
 			}
 			else {
 				FString error = "Creating Dedicated Session Failed. Creating Session was not successful.";
