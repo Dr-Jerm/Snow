@@ -50,6 +50,7 @@ server="192.168.137.250"
 
 [snow]
 firstBoot=False
+beta=False
 
 [snowApi]
 host="http://159.203.217.221:3001"

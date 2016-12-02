@@ -18,7 +18,7 @@ USteamGameInstance::USteamGameInstance(const FObjectInitializer& ObjectInitializ
 	OnStartSessionCompleteDelegate = FOnStartSessionCompleteDelegate::CreateUObject(this, &USteamGameInstance::OnStartOnlineGameComplete);
 }
 
-bool USteamGameInstance::HostDedicatedServer(FString level, FName sessionName) {
+bool USteamGameInstance::HostDedicatedServer(FString level, FName sessionName, bool betaServer) {
 
 	// Get the Online Subsystem to work with
 	IOnlineSubsystem* const OnlineSub = IOnlineSubsystem::Get();
@@ -40,6 +40,7 @@ bool USteamGameInstance::HostDedicatedServer(FString level, FName sessionName) {
 				Settings->Set(SETTING_MATCHING_HOPPER, FString("Deathmatch"), EOnlineDataAdvertisementType::DontAdvertise);
 				Settings->Set(SETTING_MATCHING_TIMEOUT, 120.0f, EOnlineDataAdvertisementType::ViaOnlineService);
 				Settings->Set(SETTING_SESSION_TEMPLATE_NAME, FString("GameSession"), EOnlineDataAdvertisementType::DontAdvertise);
+				Settings->Set(SETTING_CUSTOM, betaServer ? FString("beta") : FString("default"), EOnlineDataAdvertisementType::ViaOnlineService);
 				Settings->NumPublicConnections = this->MaxPlayers;
 				Settings->NumPrivateConnections = 0;
 				Settings->bShouldAdvertise = true;
