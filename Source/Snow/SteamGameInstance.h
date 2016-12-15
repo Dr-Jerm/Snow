@@ -46,7 +46,7 @@ public:
 	void HostDedicatedFailed(const FString &error);
 
 	UFUNCTION(BlueprintCallable, Category = "Hosting")
-	bool HostDedicatedServer(FString level, FName sessionName, bool betaSever);
+	bool HostDedicatedServer(FString level, bool betaSever);
 
 
 	/**

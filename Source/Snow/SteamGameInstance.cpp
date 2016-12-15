@@ -18,7 +18,7 @@ USteamGameInstance::USteamGameInstance(const FObjectInitializer& ObjectInitializ
 	OnStartSessionCompleteDelegate = FOnStartSessionCompleteDelegate::CreateUObject(this, &USteamGameInstance::OnStartOnlineGameComplete);
 }
 
-bool USteamGameInstance::HostDedicatedServer(FString level, FName sessionName, bool betaServer) {
+bool USteamGameInstance::HostDedicatedServer(FString level, bool betaServer) {
 
 	// Get the Online Subsystem to work with
 	IOnlineSubsystem* const OnlineSub = IOnlineSubsystem::Get();
@@ -56,7 +56,7 @@ bool USteamGameInstance::HostDedicatedServer(FString level, FName sessionName, b
 				OnCreateSessionCompleteDelegateHandle = SessionInt->AddOnCreateSessionCompleteDelegate_Handle(OnCreateSessionCompleteDelegate);
 
 				//HostDedicatedMapRequest(level);
-				return SessionInt->CreateSession(0, sessionName, *Settings);
+				return SessionInt->CreateSession(0, GameSessionName, *Settings);
 			}
 		}
 	}
