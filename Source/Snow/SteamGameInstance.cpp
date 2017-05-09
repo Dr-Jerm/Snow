@@ -5,6 +5,7 @@
 #include "OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
 #include "OnlineSubsystem.h"
+#include "OnlineSubsystemSessionSettings.h"
 #include "OnlineSubsystemImpl.h"
 #include "OnlineSubsystemUtils.h"
 #include "OnlineSubsystemUtilsModule.h"

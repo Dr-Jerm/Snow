@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-#include "OnlineSubSystemHeader.h"
 #include "AdvancedSessionsLibrary.h"
+
+#include "GameFramework/PlayerState.h"
+#include "GameFramework/GameStateBase.h"
 
 //General Log
 DEFINE_LOG_CATEGORY(AdvancedSessionsLog);
@@ -296,7 +298,7 @@ void UAdvancedSessionsLibrary::GetSessionPropertyFloat(const TArray<FSessionProp
 
 bool UAdvancedSessionsLibrary::HasOnlineSubsystem(FName SubSystemName)
 {
-	return((IOnlineSubsystem::Get(SubSystemName) != NULL));
+	return IOnlineSubsystem::DoesInstanceExist(SubSystemName);
 }
 
 void UAdvancedSessionsLibrary::GetNetPlayerIndex(APlayerController *PlayerController, int32 &NetPlayerIndex)
@@ -359,6 +361,16 @@ void UAdvancedSessionsLibrary::GetUniqueNetIDFromPlayerState(APlayerState *Playe
 		UE_LOG(AdvancedSessionsLog, Warning, TEXT("GetUniqueNetIdFromPlayerState couldn't get the player uniquenetid!"));
 	}
 	return;
+}
+
+bool UAdvancedSessionsLibrary::IsValidUniqueNetID(const FBPUniqueNetId &UniqueNetId)
+{
+	return UniqueNetId.IsValid();
+}
+
+bool UAdvancedSessionsLibrary::EqualEqual_UNetIDUnetID(const FBPUniqueNetId &A, const FBPUniqueNetId &B)
+{	
+	return ((A.IsValid() && B.IsValid()) && (*A.GetUniqueNetId() == *B.GetUniqueNetId()));
 }
 
 void UAdvancedSessionsLibrary::SetPlayerName(APlayerController *PlayerController, FString PlayerName)

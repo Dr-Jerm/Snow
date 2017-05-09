@@ -1,6 +1,8 @@
 #pragma once
-
-#include "Engine.h"
+#include "CoreMinimal.h"
+#include "EngineMinimal.h"
+#include "Engine/Engine.h"
+#include "GameFramework/PlayerState.h"
 #include "Core.h"
 #include "OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
@@ -14,7 +16,7 @@
 #include "BlueprintDataDefinitions.generated.h"	
 
 UENUM(BlueprintType)
-enum EBPUserPrivileges
+enum class EBPUserPrivileges : uint8
 {
 	/** Whether the user can play at all, online or offline - may be age restricted */
 	CanPlay,
@@ -82,13 +84,26 @@ enum class EBlueprintResultSwitch : uint8
 	OnFailure
 };
 
+// This makes a lot of the blueprint functions cleaner
+UENUM()
+enum class EBlueprintAsyncResultSwitch : uint8
+{
+	// On Success
+	OnSuccess,
+
+	// Still loading
+	AsyncLoading,
+	// On Failure
+	OnFailure
+};
+
 // This is to define server type searches
 UENUM(BlueprintType)
 enum class EBPServerPresenceSearchType : uint8
 {
+	AllServers,
 	ClientServersOnly,
-	DedicatedServersOnly,
-	AllServers
+	DedicatedServersOnly
 };
 
 // Wanted this to be switchable in the editor
@@ -156,7 +171,7 @@ public:
 
 	bool IsValid() const
 	{
-		if (bUseDirectPointer && UniqueNetIdPtr != nullptr)
+		if (bUseDirectPointer && UniqueNetIdPtr != nullptr && UniqueNetIdPtr->IsValid())
 		{
 			return true;
 		}

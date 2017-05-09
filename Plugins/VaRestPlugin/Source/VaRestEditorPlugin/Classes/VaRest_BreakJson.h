@@ -5,6 +5,7 @@
 
 #include "Engine.h"
 #include "K2Node.h"
+#include "EdGraphUtilities.h"
 
 #include "VaRest_BreakJson.generated.h"
 

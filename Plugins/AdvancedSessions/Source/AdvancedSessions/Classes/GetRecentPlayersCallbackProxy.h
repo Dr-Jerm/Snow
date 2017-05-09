@@ -1,8 +1,8 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 #pragma once
 
-#include "OnlineSubSystemHeader.h"
-
+#include "CoreMinimal.h"
+#include "BlueprintDataDefinitions.h"
 #include "GetRecentPlayersCallbackProxy.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(AdvancedGetRecentPlayersLog, Log, All);

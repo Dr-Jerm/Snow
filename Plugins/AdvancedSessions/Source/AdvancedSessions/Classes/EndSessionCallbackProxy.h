@@ -1,7 +1,8 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 #pragma once
-
+#include "CoreMinimal.h"
 #include "OnlineSessionInterface.h"
+#include "BlueprintDataDefinitions.h"
 #include "EndSessionCallbackProxy.generated.h"
 
 UCLASS(MinimalAPI)
@@ -18,7 +19,7 @@ class UEndSessionCallbackProxy : public UOnlineBlueprintCallProxyBase
 	FEmptyOnlineDelegate OnFailure;
 
 	// Ends the current session
-	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly = "true", WorldContext="WorldContextObject"), Category = "Online|AdvancedSessions")
+	UFUNCTION(BlueprintCallable, meta=(DeprecatedFunction,DeprecationMessage = "This function is deprecated, I realized that people have been using it wrong and it doesn't have much use in blueprints. Use Destroy Session only instead.",BlueprintInternalUseOnly = "true", WorldContext="WorldContextObject"), Category = "Online|AdvancedSessions|Deprecated")
 	static UEndSessionCallbackProxy* EndSession(UObject* WorldContextObject, class APlayerController* PlayerController);
 
 	// UOnlineBlueprintCallProxyBase interface

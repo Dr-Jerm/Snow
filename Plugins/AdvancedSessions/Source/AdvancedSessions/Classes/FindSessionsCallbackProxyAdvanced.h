@@ -1,9 +1,9 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 #pragma once
-
+#include "CoreMinimal.h"
 #include "OnlineSessionInterface.h"
-#include "OnlineSubSystemHeader.h"
 #include "FindSessionsCallbackProxy.h"
+#include "BlueprintDataDefinitions.h"
 #include "FindSessionsCallbackProxyAdvanced.generated.h"
 
 UCLASS(MinimalAPI)
@@ -51,6 +51,11 @@ private:
 	// Internal callback when the session search completes, calls out to the public success/failure callbacks
 	void OnCompleted(bool bSuccess);
 
+	bool bRunSecondSearch;
+	bool bIsOnSecondSearch;
+
+	TArray<FBlueprintSessionResult> SessionSearchResults;
+
 private:
 	// The player controller triggering things
 	TWeakObjectPtr<APlayerController> PlayerControllerWeakPtr;
@@ -63,6 +68,7 @@ private:
 
 	// Object to track search results
 	TSharedPtr<FOnlineSessionSearch> SearchObject;
+	TSharedPtr<FOnlineSessionSearch> SearchObjectDedicated;
 
 	// Whether or not to search LAN
 	bool bUseLAN;
