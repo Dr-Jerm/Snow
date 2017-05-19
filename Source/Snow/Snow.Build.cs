@@ -24,6 +24,8 @@ public class Snow : ModuleRules
         //DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
 
         /* VR Modules */
+        //PrivateDependencyModuleNames.AddRange(new string[] { "HeadMountedDisplay" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "SteamVR", "HeadMountedDisplay" });
 
         /* 3rd Party Plugins */
         PrivateDependencyModuleNames.AddRange(new string[] { "VaRestPlugin" });
