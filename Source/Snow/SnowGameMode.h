@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "GameLiftServerSDK.h"
 #include "GameFramework/GameMode.h"
 #include "SnowGameMode.generated.h"
 
@@ -22,9 +23,17 @@ public:
 
 	virtual void HandleSeamlessTravelPlayer(AController *& C) override;
 
+	FGameLiftServerSDKModule* gameLiftSdkModule;
+
 	//int32 GetMaxPlayers();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = ServerTravel)
 	void SeamlessTravelPlayer(AController* Controller);
+
+	UFUNCTION(BlueprintCallable, Category = GameLift)
+	void RegisterPlayer(const FString playerId);
+
+	UFUNCTION(BlueprintCallable, Category = GameLift)
+	void RemovePlayer(const FString playerId);
 	
 };
