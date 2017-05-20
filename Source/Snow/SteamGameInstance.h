@@ -3,13 +3,7 @@
 #pragma once
 
 #include "Core.h"
-#include "AdvancedFriendsGameInstance.h"
-#include "OnlineSessionInterface.h"
-#include "OnlineSessionSettings.h"
-#include "OnlineSubsystem.h"
-#include "OnlineSubsystemImpl.h"
-#include "OnlineSubsystemUtils.h"
-#include "OnlineSubsystemUtilsModule.h"
+#include "SnowGameInstance.h"
 #include "SteamGameInstance.generated.h"
 
 ///* Delegate called when session created */
@@ -25,7 +19,7 @@
  * 
  */
 UCLASS()
-class SNOW_API USteamGameInstance : public UAdvancedFriendsGameInstance
+class SNOW_API USteamGameInstance : public USnowGameInstance
 {
 	GENERATED_BODY()
 public:
@@ -34,8 +28,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Game)
 	int32 MaxPlayers = 6;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hosting")
-	FString localIp;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hosting")
+	//FString localIp;
+
+	//UFUNCTION(BlueprintImplementableEvent, Category = "OnlineSubsystem")
+	//void SearchSessions(bool autoJoin);
 
 	TSharedPtr<class FOnlineSessionSettings> Settings;
 
