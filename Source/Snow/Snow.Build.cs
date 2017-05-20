@@ -17,11 +17,15 @@ public class Snow : ModuleRules
              "OnlineSubsystemUtils"
          });
 
+        /* AWS GameLift */
+        PublicDependencyModuleNames.AddRange(new string[] { "GameLiftServerSDK" });
+
         //DynamicallyLoadedModuleNames.Add("OnlineSubsystemSteam");
         //DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
 
         /* VR Modules */
-        PrivateDependencyModuleNames.AddRange(new string[] { "SteamVR","HeadMountedDisplay" });
+        //PrivateDependencyModuleNames.AddRange(new string[] { "HeadMountedDisplay" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "SteamVR", "HeadMountedDisplay" });
 
         /* 3rd Party Plugins */
         PrivateDependencyModuleNames.AddRange(new string[] { "VaRestPlugin" });
