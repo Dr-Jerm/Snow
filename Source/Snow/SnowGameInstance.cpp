@@ -1,0 +1,19 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#include "Snow.h"
+#include "SnowGameInstance.h"
+
+
+USnowGameInstance::USnowGameInstance(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	/** Bind function for CREATING a Session */
+	//OnCreateSessionCompleteDelegate = FOnCreateSessionCompleteDelegate::CreateUObject(this, &USteamGameInstance::OnCreateSessionComplete);
+	//OnStartSessionCompleteDelegate = FOnStartSessionCompleteDelegate::CreateUObject(this, &USteamGameInstance::OnStartOnlineGameComplete);
+}
+
+void USnowGameInstance::SelectBestSession_Implementation(FBlueprintSessionResult &session) {
+	FBlueprintSessionResult result;
+	session = result;
+}
+
