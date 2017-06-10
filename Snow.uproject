@@ -63,6 +63,10 @@
 		{
 			"Name": "SteamVR",
 			"Enabled": false
+		},
+		{
+			"Name": "OnlineSubsystemHypereal",
+			"Enabled": true
 		}
 	]
 }
