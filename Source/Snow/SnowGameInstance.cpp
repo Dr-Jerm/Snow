@@ -14,6 +14,14 @@ USnowGameInstance::USnowGameInstance(const FObjectInitializer& ObjectInitializer
 
 void USnowGameInstance::SelectBestSession_Implementation(FBlueprintSessionResult &session) {
 	FBlueprintSessionResult result;
+
+	if (CachedSessions.Num() == 0) {
+		session = result;
+		return;
+	}
+
+	result = CachedSessions[0];
+
 	session = result;
 }
 

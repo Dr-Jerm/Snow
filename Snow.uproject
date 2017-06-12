@@ -57,16 +57,16 @@
 			"Enabled": false
 		},
 		{
-			"Name": "OculusRift",
-			"Enabled": false
-		},
-		{
 			"Name": "SteamVR",
 			"Enabled": false
 		},
 		{
 			"Name": "OnlineSubsystemHypereal",
 			"Enabled": true
+		},
+		{
+			"Name": "OculusRift",
+			"Enabled": false
 		}
 	]
 }

@@ -37,10 +37,13 @@ public:
 	USnowGameInstance(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OnlineSubsystem")
+	TArray<FBlueprintSessionResult> CachedSessions;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OnlineSubsystem")
 	FString ErrorMessage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OnlineSubsystem")
-	EOnlineStateEnum OnlineState;
+	EOnlineStateEnum OnlineState = EOnlineStateEnum::OS_Offline;
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "OnlineSubsystem")
 	void SearchSessions(bool autoJoin);
@@ -53,6 +56,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "OnlineSubsystem")
 	void LeaveSession(FName level);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "OnlineSubsystem")
+	void SessionServerTravel(FName level);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "OnlineSubsystem")
 	void SelectBestSession(FBlueprintSessionResult &session);

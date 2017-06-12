@@ -26,6 +26,12 @@ TransitionMap=/Game/Levels/TRN_loading.TRN_loading
 [Voice] 
 bEnabled=false
 
+[/Script/Engine.GameEngine]
++NetDriverDefinitions=(DefName="GameNetDriver",DriverClassName="OnlineSubsystemHypereal.HyperealNetDriver",DriverClassNameFallback="OnlineSubsystemUtils.IpNetDriver")
+
+[/Script/OnlineSubsystemHypereal.HyperealNetDriver]
+NetConnectionClassName="OnlineSubsystemHypereal.HyperealNetConnection"
+
 [OnlineSubsystem]
 DefaultPlatformService=Hypereal
 
