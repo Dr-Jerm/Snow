@@ -46,22 +46,22 @@ public:
 	EOnlineStateEnum OnlineState = EOnlineStateEnum::OS_Offline;
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "OnlineSubsystem")
-	void SearchSessions(bool autoJoin);
+	void SearchSnowSessions(bool autoJoin);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "OnlineSubsystem")
-	void HostSession(FName level);
+	void HostSnowSession(FName level);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "OnlineSubsystem")
-	void JoinSession(FBlueprintSessionResult session);
+	void JoinSnowSession(FBlueprintSessionResult session);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "OnlineSubsystem")
-	void LeaveSession(FName level);
+	void LeaveSnowSession(FName level);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "OnlineSubsystem")
-	void SessionServerTravel(FName level);
+	void SnowSessionServerTravel(FName level);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "OnlineSubsystem")
-	void SelectBestSession(FBlueprintSessionResult &session);
+	void SelectBestSnowSession(FBlueprintSessionResult &session);
 	
 
 };
