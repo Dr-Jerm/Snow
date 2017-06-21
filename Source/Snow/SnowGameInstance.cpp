@@ -12,7 +12,7 @@ USnowGameInstance::USnowGameInstance(const FObjectInitializer& ObjectInitializer
 	//OnStartSessionCompleteDelegate = FOnStartSessionCompleteDelegate::CreateUObject(this, &USteamGameInstance::OnStartOnlineGameComplete);
 }
 
-void USnowGameInstance::SelectBestSession_Implementation(FBlueprintSessionResult &session) {
+void USnowGameInstance::SelectBestSnowSession_Implementation(FBlueprintSessionResult &session) {
 	FBlueprintSessionResult result;
 
 	if (CachedSessions.Num() == 0) {
