@@ -41,10 +41,6 @@
 			"Enabled": false
 		},
 		{
-			"Name": "GameLiftServerSDK",
-			"Enabled": true
-		},
-		{
 			"Name": "GearVR",
 			"Enabled": false
 		},
@@ -63,6 +59,10 @@
 		{
 			"Name": "OculusRift",
 			"Enabled": true
+		},
+		{
+			"Name": "HyperealVR",
+			"Enabled": false
 		}
 	]
 }
