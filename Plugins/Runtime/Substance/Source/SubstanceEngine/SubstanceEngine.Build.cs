@@ -20,7 +20,7 @@ public class SubstanceEngine : ModuleRules
 		GPU,
 	};
 
-	public SubstanceEngine(TargetInfo Target)
+	public SubstanceEngine(ReadOnlyTargetRules Target) : base(Target)
 	{
 		//Marked as an external module as we are not building any source code with this module
 		Type = ModuleType.External;
@@ -167,7 +167,7 @@ public class SubstanceEngine : ModuleRules
 		}
 	}
 
-	public string GetBuildConfig(TargetInfo Target)
+	public string GetBuildConfig(ReadOnlyTargetRules Target)
 	{
 		if (Target.Configuration == UnrealTargetConfiguration.Debug)
 		{
@@ -186,17 +186,18 @@ public class SubstanceEngine : ModuleRules
 		return "Release";
 	}
 
-	public string GetPlatformConfig(TargetInfo Target)
+	public string GetPlatformConfig(ReadOnlyTargetRules Target)
 	{
 		string platform = Target.Platform.ToString();
 
 		if (Target.Platform == UnrealTargetPlatform.Win32 ||
 		        Target.Platform == UnrealTargetPlatform.Win64)
 		{
-			if (WindowsPlatform.Compiler == WindowsCompiler.VisualStudio2013)
-			{
-				platform = platform + "_2013";
-			}
+			//TODO:: UE4 no longer supports 2013 - We should also drop support on our end and add support for 2017
+			//if (WindowsPlatform.Compiler == WindowsCompiler.VisualStudio2013)
+			//{
+			//	platform = platform + "_2013";
+			//}
 		}
 
 		return platform;

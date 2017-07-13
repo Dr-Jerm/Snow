@@ -5,22 +5,10 @@ using System.Collections.Generic;
 
 public class SnowTarget : TargetRules
 {
-	public SnowTarget(TargetInfo Target)
-	{
+	public SnowTarget(TargetInfo Target) : base(Target)
+    {
 		Type = TargetType.Game;
+        ExtraModuleNames.AddRange(new string[] { "Snow" });
         bUsesSteam = true;
     }
-
-	//
-	// TargetRules interface.
-	//
-
-	public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.AddRange( new string[] { "Snow" } );
-	}
 }

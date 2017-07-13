@@ -2,14 +2,26 @@
 // File: SubstanceGraphInstance.h
 
 #pragma once
+
+#ifdef SUBSTANCE_FRAMEWORK_INCLUDED
+#include "substance/framework/framework.h"
+#endif
+
 #include "Materials/Material.h"
-#include <substance/framework/framework.h>
 #include "SubstanceGraphInstance.generated.h"
+
 
 /** Forward Declares */
 class USubstanceInstanceFactory;
 class USubstanceGraphInstance;
 class USubstanceImageInput;
+
+namespace SubstanceAir
+{
+	class GraphInstance;
+	class InputInstanceImage;
+	struct Preset;
+}
 
 /** UE4 related data stored re*/
 struct GraphInstanceData
@@ -89,8 +101,8 @@ struct FSubstanceInstanceDesc
 	TArray<FSubstanceInputDesc> Inputs;
 };
 
-UCLASS(hideCategories = Object, MinimalAPI, BlueprintType)
-class USubstanceGraphInstance : public UObject
+UCLASS(hideCategories = Object, BlueprintType)
+class SUBSTANCECORE_API USubstanceGraphInstance : public UObject
 {
 	GENERATED_UCLASS_BODY()
 
@@ -135,6 +147,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Substance")
 	void SetInputString(FString Identifier, const FString& Value);
 
+	/** Set an input with a color value type */
+	UFUNCTION(BlueprintCallable, Category = "Substance")
+	void SetInputColor(FString Identifier, const FLinearColor& Color);
+
+	/** Set an input with a bool value type */
+	UFUNCTION(BlueprintCallable, Category = "Substance")
+	void SetInputBool(FString Identifier, bool Bool);
+
 	/** Get input values in an int value type array */
 	UFUNCTION(BlueprintCallable, Category = "Substance")
 	TArray<int32> GetInputInt(FString Identifier);
@@ -146,6 +166,14 @@ public:
 	/** Get input values of a string input */
 	UFUNCTION(BlueprintCallable, Category = "Substance")
 	FString GetInputString(FString Identifier);
+
+	/** Get input values of a color input */
+	UFUNCTION(BlueprintCallable, Category = "Substance")
+	FLinearColor GetInputColor(FString Identifier);
+
+	/** Get input values of a boolean input */
+	UFUNCTION(BlueprintCallable, Category = "Substance")
+	bool GetInputBool(FString Identifier);
 
 	/** Get an Int input description converted to a UE wrapper */
 	UFUNCTION(BlueprintCallable, Category = "Substance")
@@ -177,7 +205,7 @@ public:
 	GraphInstanceData mUserData;
 
 	/** Input delta values */
-	SubstanceAir::Preset InstancePreset;
+	TSharedPtr<SubstanceAir::Preset> InstancePreset;
 
 	/** Checks to see if the generation mode allows for updating and makes sure the graph isn't frozen*/
 	bool CanUpdate();

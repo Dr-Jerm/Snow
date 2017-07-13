@@ -1,7 +1,7 @@
 {
 	"FileVersion" : 3,
-	"Version" : 48,
-	"VersionName" : "4.15.0.23",
+	"Version" : 49,
+	"VersionName" : "4.16.0.24",
 	"FriendlyName" : "Substance",
 	"Description" : "Adds support for Substance (sbsar) textures",
 	"Category" : "Editor",
@@ -10,6 +10,7 @@
 	"DocsURL" : "",
 	"MarketplaceURL" : "com.epicgames.launcher://ue/marketplace/content/2f6439c2f9584f49809d9b13b16c2ba4",
 	"SupportURL" : "",
+	"EngineVersion" : "4.16.0",
 	"CanContainContent" : false,
 	"IsBetaVersion" : false,
 	"Installed" : true,

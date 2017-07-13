@@ -244,13 +244,17 @@ void RemoveFromDelayedImageInputs(SubstanceAir::InputInstanceImage* ImgInput)
 		return;
 
 	TArray<Substance::GraphImageInputPair>::TIterator ItInp(DelayedImageInputs);
-	for (; ItInp; ++ItInp)
+	while(ItInp)
 	{
 		if (ItInp->first == ImgInput)
 		{
 			LoadingQueue.Remove(ItInp->second);
 			DelayedImageInputs.Remove(*ItInp);
 			ItInp.Reset();
+		}
+		else
+		{
+			++ItInp;
 		}
 	}
 }
@@ -484,7 +488,7 @@ void UpdateTexture(const SubstanceTexture& result, SubstanceAir::OutputInstance*
 		return;
 
 	//Publish to cache if appropriate
-	if (bCacheResults && Texture->ParentInstance->bCooked)
+	if (bCacheResults && Texture->ParentInstance && Texture->ParentInstance->bCooked)
 	{
 		if (Texture->ParentInstance->ParentFactory->ShouldCacheOutput())
 		{
@@ -2303,13 +2307,14 @@ int32 UpdateInput(SubstanceAir::GraphInstance* Instance, const SubstanceAir::Inp
 	int32 ModifiedOuputs = 0;
 
 	//Special case for reimported image inputs
-	if (InputInstance->mDesc.mUid == 0)
+	if (!InputInstance)
 	{
 		for (auto ItIn = Instance->getInputs().begin(); ItIn != Instance->getInputs().end(); ++ItIn)
 		{
-			if (!(*ItIn)->mDesc.isNumerical())
+			SubstanceAir::InputImage* Input = ((SubstanceAir::InputInstanceImage*)(*ItIn))->getImage().get();
+			if (!(*ItIn)->mDesc.isNumerical() && Input)
 			{
-				size_t& ImageUserData = ((SubstanceAir::InputInstanceImage*)(*ItIn))->getImage()->mUserData;
+				size_t& ImageUserData = Input->mUserData;
 				if (reinterpret_cast<InputImageData*>(ImageUserData)->ImageUObjectSource == InValue)
 				{
 					ModifiedOuputs += SetImageInputHelper(&(*ItIn)->mDesc, InValue, Instance);

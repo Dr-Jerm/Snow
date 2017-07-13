@@ -3,14 +3,17 @@
 
 #pragma once
 #include "Engine.h"
-#include "substance/framework/framework.h"
 #include "SubstanceInstanceFactory.generated.h"
 
 /** Forward Declare */
-class PackageDesc;
 class USubstanceGraphInstance;
 class USubstanceInstanceFactory;
 struct LegacyPackage;
+
+namespace SubstanceAir
+{
+	class PackageDesc;
+}
 
 /** User data referenced by the framework */
 struct PackageDescData
@@ -30,8 +33,8 @@ enum ESubstanceGenerationMode
 	SGM_MAX = 6
 };
 
-UCLASS(hideCategories = Object, MinimalAPI, BlueprintType)
-class USubstanceInstanceFactory : public UObject
+UCLASS(hideCategories = Object, BlueprintType)
+class SUBSTANCECORE_API USubstanceInstanceFactory : public UObject
 {
 	GENERATED_UCLASS_BODY()
 
@@ -83,14 +86,17 @@ public:
 	/** Increases the count of graph instances relying on this factory - Used for cleanup */
 	void RegisterGraphInstance(USubstanceGraphInstance* Graph);
 
+	/** Initialize this factory with a Substance Package */
+	void Initialize(SubstanceAir::PackageDesc* Package);
+
 	/** Decreases the count of graph instances relying on this factory - Used for cleanup */
-	SUBSTANCECORE_API void UnregisterGraphInstance(USubstanceGraphInstance* Graph);
+	void UnregisterGraphInstance(USubstanceGraphInstance* Graph);
 
 	/** Returns the array of current associated graphs */
-	SUBSTANCECORE_API const TArray<USubstanceGraphInstance*> GetGraphInstances();
+	const TArray<USubstanceGraphInstance*> GetGraphInstances();
 
 	/** Returns a list of strings of all of the graph packages from the current graph instances */
-	SUBSTANCECORE_API void ClearReferencingObjects();
+	void ClearReferencingObjects();
 
 private:
 

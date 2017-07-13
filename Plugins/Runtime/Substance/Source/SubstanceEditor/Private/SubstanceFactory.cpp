@@ -191,8 +191,7 @@ UObject* USubstanceFactory::FactoryCreateBinary(
 	const uint32 BufferLength = BufferEnd - Buffer;
 
 	//Create the framework package
-	Factory->SubstancePackage = Substance::Helpers::InstantiatePackage((void*)Buffer, BufferLength);
-	Factory->SubstancePackage->mUserData = (size_t)&Factory->mPackageUserData;
+	Factory->Initialize(Substance::Helpers::InstantiatePackage((void*)Buffer, BufferLength));
 
 	//If the operation failed
 	if (false == Factory->SubstancePackage->isValid())
@@ -271,7 +270,9 @@ UObject* USubstanceFactory::FactoryCreateBinary(
 				UObject* MaterialBasePackage = CreatePackage(NULL, *MatPath);
 				TWeakObjectPtr<UMaterial> Mat = Substance::Helpers::CreateMaterial(NewInstance, MatName, MaterialBasePackage);
 				if (Mat.IsValid())
+				{
 					AssetList.AddUnique(Mat.Get());
+				}
 			}
 		}
 
@@ -388,7 +389,9 @@ bool UReimportSubstanceFactory::CanReimport(UObject* Obj, TArray<FString>& OutFi
 	}
 
 	if (GraphInstance)
+	{
 		InstanceFactory = GraphInstance->ParentFactory;
+	}
 
 	//Check absolute file path
 	IFileManager& FileManager = IFileManager::Get();
@@ -511,7 +514,7 @@ void UReimportSubstanceFactory::SaveRecreationData(USubstanceInstanceFactory* Fa
 			{
 				UMaterialExpressionTextureSample* Expression = Cast<UMaterialExpressionTextureSample>((*MatItr)->Expressions[ExpressionIndex]);
 
-				if (Expression)
+				if (Expression && Expression->Texture)
 				{
 					USubstanceTexture2D* SubstanceTexture = Cast<USubstanceTexture2D>(Expression->Texture);
 					if (SubstanceTexture && SubstanceTexture->OutputCopy && SubstanceTexture->ParentInstance && SubstanceTexture->ParentInstance->Instance &&

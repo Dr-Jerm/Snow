@@ -313,6 +313,19 @@ ESubChannelType USubstanceTexture2D::GetChannel()
 		return ESubChannelType::Refraction;
 	case SubstanceAir::Channel_AmbientOcclusion:
 		return ESubChannelType::AmbientOcclusion;
+	case SubstanceAir::Channel_Displacement:
+		return ESubChannelType::Displacement;
+	case SubstanceAir::Channel_Ambient:
+		return ESubChannelType::Ambient;
+	case SubstanceAir::Channel_Glossiness:
+		return ESubChannelType::Glossiness;
+	case SubstanceAir::Channel_Reflection:
+		return ESubChannelType::Reflection;
+	case SubstanceAir::Channel_Diffuse:
+		return ESubChannelType::Diffuse;
+	case SubstanceAir::Channel_Height:
+		return ESubChannelType::Height;
+
 	default:
 		return ESubChannelType::Invalid;
 	};

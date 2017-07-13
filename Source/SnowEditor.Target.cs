@@ -5,21 +5,9 @@ using System.Collections.Generic;
 
 public class SnowEditorTarget : TargetRules
 {
-	public SnowEditorTarget(TargetInfo Target)
-	{
+	public SnowEditorTarget(TargetInfo Target) : base(Target)
+    {
 		Type = TargetType.Editor;
-	}
-
-	//
-	// TargetRules interface.
-	//
-
-	public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.AddRange( new string[] { "Snow" } );
-	}
+        ExtraModuleNames.AddRange(new string[] { "Snow" });
+    }
 }

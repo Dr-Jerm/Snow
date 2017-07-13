@@ -4,8 +4,8 @@ using UnrealBuildTool;
 
 public class Snow : ModuleRules
 {
-	public Snow(TargetInfo Target)
-	{
+	public Snow(ReadOnlyTargetRules Target) : base(Target)
+    {
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Sockets", "Networking" });
 
         /* HTTP Module */

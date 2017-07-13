@@ -11,6 +11,7 @@
 #include "SubstanceCoreCustomVersion.h"
 #include "SubstanceInstanceFactory.h"
 #include "substance/framework/package.h"
+#include "substance/framework/preset.h"
 
 /** FArchive Function Definitions*/
 FArchive& operator<<(FArchive& Ar, SubstanceAir::PackageDesc*& P)
@@ -31,11 +32,7 @@ FArchive& operator<<(FArchive& Ar, SubstanceAir::PackageDesc*& P)
 		//NOTE::This is okay because this will never serialize for cooking and is only ran whenever and object is being duplicated
 		if (Ar.GetArchiveName() == FString("FDuplicateDataWriter"))
 		{
-#if PLATFORM_WINDOWS
-			Ar << P->mUserData;
-#else 
-			Ar.ByteOrderSerialize((void*)P->mUserData, sizeof(P->mUserData));
-#endif
+			Ar.ByteOrderSerialize((void*)&P->mUserData, sizeof(P->mUserData));
 		}
 
 	}
@@ -64,11 +61,7 @@ FArchive& operator<<(FArchive& Ar, SubstanceAir::PackageDesc*& P)
 		//NOTE::This is okay because this will never serialize for cooking and is only ran whenever and object is being duplicated
 		if (Ar.GetArchiveName() == FString("FDuplicateDataReader"))
 		{
-#if PLATFORM_WINDOWS
-			Ar << P->mUserData;
-#else 
-			Ar.ByteOrderSerialize((void*)P->mUserData, sizeof(P->mUserData));
-#endif
+			Ar.ByteOrderSerialize((void*)&P->mUserData, sizeof(P->mUserData));
 		}
 	}
 
@@ -317,7 +310,7 @@ void LegacySerializeInputInstance(FArchive& Ar, LegacyInput& Input, USubstanceGr
 	Value.mUid = Input.UID;
 
 	LegacySerializeInputValue(Ar, Input, Value, Graph);
-	Graph->InstancePreset.mInputValues.push_back(Value);
+	Graph->InstancePreset->mInputValues.push_back(Value);
 }
 
 void LegacySerializeInputImage(SubstanceAir::InputInstanceImage* Image)
@@ -326,8 +319,8 @@ void LegacySerializeInputImage(SubstanceAir::InputInstanceImage* Image)
 
 void FinalizeLegacyPresets(USubstanceGraphInstance* Graph)
 {
-	std::vector<SubstanceAir::Preset::InputValue>::iterator PreItr = Graph->InstancePreset.mInputValues.begin();
-	for (; PreItr != Graph->InstancePreset.mInputValues.end(); ++PreItr)
+	std::vector<SubstanceAir::Preset::InputValue>::iterator PreItr = Graph->InstancePreset->mInputValues.begin();
+	for (; PreItr != Graph->InstancePreset->mInputValues.end(); ++PreItr)
 	{
 		//Find the Graph that matches our UID and add in the last value element
 		auto It = Graph->Instance->getInputs().cbegin();

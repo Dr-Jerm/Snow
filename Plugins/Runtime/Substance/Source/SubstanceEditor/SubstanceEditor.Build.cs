@@ -9,7 +9,7 @@ using UnrealBuildTool;
 
 public class SubstanceEditor : ModuleRules
 {
-	public SubstanceEditor(TargetInfo Target)
+	public SubstanceEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
 		//PCH file
 		bEnforceIWYU = false;

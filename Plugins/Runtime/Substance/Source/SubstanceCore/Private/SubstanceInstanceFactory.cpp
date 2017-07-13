@@ -46,7 +46,7 @@ void USubstanceInstanceFactory::BeginDestroy()
 	if (SubstancePackage)
 	{
 		AIR_DELETE(SubstancePackage);
-		SubstancePackage = NULL;
+		SubstancePackage = nullptr;
 	}
 }
 
@@ -84,6 +84,15 @@ bool USubstanceInstanceFactory::ShouldCacheOutput() const
 void USubstanceInstanceFactory::RegisterGraphInstance(USubstanceGraphInstance* Graph)
 {
 	GraphInstances.AddUnique(Graph);
+}
+
+void USubstanceInstanceFactory::Initialize(SubstanceAir::PackageDesc* Package)
+{
+	check(Package);
+
+	mPackageUserData.ParentFactory = this;
+	SubstancePackage = Package;
+	SubstancePackage->mUserData = (size_t)&mPackageUserData;
 }
 
 void USubstanceInstanceFactory::UnregisterGraphInstance(USubstanceGraphInstance* Graph)

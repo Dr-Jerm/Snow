@@ -2,8 +2,10 @@
 // File: SubstanceCoreHelpers.h
 
 #pragma once
+#ifdef SUBSTANCE_FRAMEWORK_INCLUDED
 #include <substance/pixelformat.h>
 #include <substance/framework/preset.h>
+#endif
 
 class USubstanceImageInput;
 class USubstanceInstanceFactory;

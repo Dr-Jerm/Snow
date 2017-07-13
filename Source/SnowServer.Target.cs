@@ -6,22 +6,10 @@ using System.Collections.Generic;
 [SupportedPlatforms(UnrealPlatformClass.Server)]
 public class SnowServerTarget : TargetRules
 {
-	public SnowServerTarget(TargetInfo Target)
-	{
+	public SnowServerTarget(TargetInfo Target) : base(Target)
+    {
 		Type = TargetType.Server;
+        ExtraModuleNames.Add("Snow");
         bUsesSteam = true;
     }
-
-	//
-	// TargetRules interface.
-	//
-
-	public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.Add("Snow");
-	}
 }

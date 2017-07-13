@@ -8,6 +8,7 @@
 #include "SubstanceTexture2D.h"
 #include "SubstanceCoreHelpers.h"
 #include "SubstanceSettings.h"
+#include "substance/framework/framework.h"
 
 #include "Materials/MaterialExpressionTextureSample.h"
 
@@ -302,6 +303,79 @@ void USubstanceUtility::SetGraphInstanceOutputSizeInt(USubstanceGraphInstance* G
 void USubstanceUtility::ClearCache()
 {
 	Substance::Helpers::ClearCache();
+}
+
+USubstanceInstanceFactory* USubstanceUtility::CreateAggregateSubstanceFactory(
+    USubstanceInstanceFactory* OutputFactory,
+    int32 OutputFactoryGraphIndex,
+    USubstanceInstanceFactory* InputFactory,
+    int32 InputFactoryGraphIndex,
+    const TArray<FSubstanceConnection>& Connections)
+{
+	//First we must resolve the GraphDesc's we plan to create an aggregate from
+	const SubstanceAir::GraphDesc* OutputGraph = nullptr;
+	const SubstanceAir::GraphDesc* InputGraph = nullptr;
+
+	auto GetGraphAtIndex = [](USubstanceInstanceFactory * Factory, uint32 GraphIndex, const SubstanceAir::GraphDesc** OutGraph)
+	{
+		if (Factory && Factory->SubstancePackage && Factory->SubstancePackage->getGraphs().size() > GraphIndex && GraphIndex >= 0)
+		{
+			*OutGraph = &(Factory->SubstancePackage->getGraphs()[GraphIndex]);
+		}
+	};
+
+	GetGraphAtIndex(OutputFactory, OutputFactoryGraphIndex, &OutputGraph);
+	GetGraphAtIndex(InputFactory, InputFactoryGraphIndex, &InputGraph);
+
+	if (!OutputGraph || !InputGraph)
+	{
+		UE_LOG(LogSubstanceCore, Warning, TEXT("Unable to resolve one or more GraphDesc's for CreateAggregateSubstanceFactory"));
+		return nullptr;
+	}
+
+	SubstanceAir::ConnectionsOptions ConnectionOptions;
+
+	//Now build the connection options list
+	for (const auto& connection : Connections)
+	{
+		SubstanceAir::string OutputIdentifier(TCHAR_TO_UTF8(*connection.OutputIdentifier));
+		SubstanceAir::string InputIdentifier(TCHAR_TO_UTF8(*connection.InputImageIdentifier));
+		SubstanceAir::UInt outputUID = 0;
+		SubstanceAir::UInt inputUID = 0;
+
+		for (const auto& output : OutputGraph->mOutputs)
+		{
+			if (output.mIdentifier == OutputIdentifier)
+			{
+				outputUID = output.mUid;
+				break;
+			}
+		}
+
+		for (const auto& input : InputGraph->mInputs)
+		{
+			if (input->mIdentifier == InputIdentifier)
+			{
+				inputUID = input->mUid;
+				break;
+			}
+		}
+
+		ConnectionOptions.mConnections.push_back(std::make_pair(outputUID, inputUID));
+	}
+
+	SubstanceAir::unique_ptr<SubstanceAir::PackageDesc> package(AIR_NEW(SubstanceAir::PackageStackDesc)(*OutputGraph, *InputGraph, ConnectionOptions));
+	if (package->isValid() == false)
+	{
+		UE_LOG(LogSubstanceCore, Warning, TEXT("Creating AggregatePackage failed in CreateAggregateSubstanceFactory"));
+		return nullptr;
+	}
+
+	const char* AggregateLabel = package->getGraphs()[0].mLabel.c_str();
+	USubstanceInstanceFactory* AggregateFactory = NewObject<USubstanceInstanceFactory>(GetTransientPackage(), AggregateLabel, RF_Transient);
+	AggregateFactory->Initialize(package.release());
+
+	return AggregateFactory;
 }
 
 void USubstanceUtility::SyncRendering(USubstanceGraphInstance* GraphInstance)

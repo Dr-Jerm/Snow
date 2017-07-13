@@ -11,6 +11,7 @@
 #include "OnlineMessageInterface.h"
 #include "OnlinePresenceInterface.h"
 #include "Engine/GameInstance.h"
+#include "Engine/LocalPlayer.h"
 #include "OnlineSessionInterface.h"
 #include "OnlineSessionSettings.h"
 #include "UObjectIterator.h"
@@ -65,7 +66,7 @@ public:
 
 	// After a session invite has been accepted by the local player this event is triggered, call JoinSession on the session result to join it
 	UFUNCTION(BlueprintImplementableEvent, Category = "AdvancedFriends")
-	void OnSessionInviteAccepted(int32 LocalPlayerNum, FBPUniqueNetId PersonInviting, const FBlueprintSessionResult& SessionToJoin);
+	void OnSessionInviteAccepted(int32 LocalPlayerNum, FBPUniqueNetId PersonInvited, const FBlueprintSessionResult& SessionToJoin);
 
 
 	// After a voice status has changed this event is triggered if the bEnableTalkingStatusDelegate property is true
@@ -88,7 +89,7 @@ public:
 
 	// Called when the designated LocalUser has changed login status
 	UFUNCTION(BlueprintImplementableEvent, Category = "AdvancedIdentity", meta = (DisplayName = "OnPlayerLoginStatusChanged"))
-	void OnPlayerLoginStatusChanged(int32 PlayerNum, EBPLoginStatus &PreviousStatus, EBPLoginStatus &NewStatus, FBPUniqueNetId & NewPlayerUniqueNetID);
+	void OnPlayerLoginStatusChanged(int32 PlayerNum, EBPLoginStatus PreviousStatus, EBPLoginStatus NewStatus, FBPUniqueNetId NewPlayerUniqueNetID);
 
 	void OnPlayerLoginStatusChangedMaster(int32 PlayerNum, ELoginStatus::Type PreviousStatus, ELoginStatus::Type NewStatus, const FUniqueNetId & NewPlayerUniqueNetID);
 	FOnLoginStatusChangedDelegate PlayerLoginStatusChangedDelegate;

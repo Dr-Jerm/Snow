@@ -27,6 +27,7 @@ USubstanceGraphInstance::USubstanceGraphInstance(class FObjectInitializer const&
 	bIsFrozen = false;
 	Instance = nullptr;
 	CreatedMaterial = nullptr;
+	InstancePreset = MakeShared<SubstanceAir::Preset>();
 }
 
 void USubstanceGraphInstance::Serialize(FArchive& Ar)
@@ -73,15 +74,18 @@ void USubstanceGraphInstance::SerializeCurrent(FArchive& Ar)
 
 		//Make sure the instance hasn't been thrashed from and invalid parent factory before accessing it
 		if (ParentFactory)
+		{
 			InstancePresets.fill(*Instance);
+		}
 
-		std::stringstream SS;
+		SubstanceAir::stringstream SS;
 		SS << InstancePresets;
 
-		uint32 presetsSize = SS.str().length();
+		SubstanceAir::string PresetString = SS.str();
+		uint32 presetsSize = PresetString.length();
 		Ar << presetsSize;
 
-		Ar.ByteOrderSerialize((void*)SS.str().c_str(), presetsSize);
+		Ar.ByteOrderSerialize((void*)PresetString.c_str(), presetsSize);
 
 		//Associate this asset with the current plugin version
 		Ar.UsingCustomVersion(FSubstanceCoreCustomVersion::GUID);
@@ -89,10 +93,9 @@ void USubstanceGraphInstance::SerializeCurrent(FArchive& Ar)
 
 		if (Ar.GetArchiveName() == FString("FDuplicateDataWriter"))
 		{
-			FString SourceGraphName;
-			check(mUserData.ParentGraph.IsValid())
-			mUserData.ParentGraph.Get()->GetName(SourceGraphName);
-			Ar << SourceGraphName;
+			FString CurrentName;
+			this->GetName(CurrentName);
+			Ar << CurrentName;
 		}
 	}
 	else if (Ar.IsLoading())
@@ -106,13 +109,13 @@ void USubstanceGraphInstance::SerializeCurrent(FArchive& Ar)
 
 			Ar.ByteOrderSerialize(presetData, presetsSize);
 
-			SubstanceAir::parsePreset(InstancePreset, presetData);
+			SubstanceAir::parsePreset(*InstancePreset.Get(), presetData);
 			delete[] presetData;
 
 			//Handle transacting
-			if (Ar.IsTransacting() && Instance && InstancePreset.mPackageUrl == Instance->mDesc.mPackageUrl)
+			if (Ar.IsTransacting() && Instance && InstancePreset->mPackageUrl == Instance->mDesc.mPackageUrl)
 			{
-				InstancePreset.apply(*Instance);
+				InstancePreset->apply(*Instance);
 			}
 		}
 
@@ -140,7 +143,9 @@ void USubstanceGraphInstance::SerializeCurrent(FArchive& Ar)
 
 	//This is gross but it prevents a serialize size mismatch from a save corruption! (UE4-391)
 	if (((int32)(Ar.TotalSize() - Ar.Tell()) > 4 && Ar.IsLoading()) || !Ar.IsLoading())
+	{
 		Ar << bCooked;
+	}
 }
 
 void USubstanceGraphInstance::SerializeLegacy(FArchive& Ar)
@@ -210,7 +215,9 @@ void USubstanceGraphInstance::BeginDestroy()
 
 	//Unregister the graph
 	if (ParentFactory)
+	{
 		ParentFactory->UnregisterGraphInstance(this);
+	}
 }
 
 void USubstanceGraphInstance::PostDuplicate(bool bDuplicateForPIE)
@@ -278,7 +285,9 @@ void USubstanceGraphInstance::PostDuplicate(bool bDuplicateForPIE)
 			{
 				//Skip unsupported outputs
 				if ((*itout)->mUserData == 0)
+				{
 					continue;
+				}
 
 				AssetList.AddUnique(reinterpret_cast<OutputInstanceData*>((*itout)->mUserData)->Texture.Get());
 			}
@@ -346,17 +355,19 @@ void USubstanceGraphInstance::PostLoad()
 		Instance->mUserData = (size_t)&mUserData;
 
 		//Only finalize on legacy load
-		if (!InstancePreset.mPackageUrl.size())
+		if (!InstancePreset->mPackageUrl.size())
 		{
-			InstancePreset.mPackageUrl = Instance->mDesc.mPackageUrl;
+			InstancePreset->mPackageUrl = Instance->mDesc.mPackageUrl;
 			FinalizeLegacyPresets(this);
 		}
 
 		//Set instance presets
-		if (InstancePreset.mPackageUrl == Instance->mDesc.mPackageUrl)
+		if (InstancePreset->mPackageUrl == Instance->mDesc.mPackageUrl)
 		{
-			if (!InstancePreset.apply(*Instance) && InstancePreset.mInputValues.size() > 0)
+			if (!InstancePreset->apply(*Instance) && InstancePreset->mInputValues.size() > 0)
+			{
 				UE_LOG(LogSubstanceCore, Warning, TEXT("Failed to apply presets for instance - %s."), *GetName());
+			}
 		}
 	}
 
@@ -443,7 +454,9 @@ bool USubstanceGraphInstance::SetInputImg(const FString& Name, class UObject* Va
 			}
 
 			if (CurrentInputImage)
+			{
 				Substance::Helpers::UpdateInput(this->Instance, CurrentInputImage, Value);
+			}
 
 			bool bUseOtherInput = false;
 			if (PrevSource)
@@ -577,6 +590,53 @@ void USubstanceGraphInstance::SetInputString(FString Identifier, const FString& 
 	}
 }
 
+void USubstanceGraphInstance::SetInputColor(FString Identifier, const FLinearColor& InputValue)
+{
+	//Format value in a way we can pass to the engine
+	TArray<float> InputValues;
+	InputValues.Add(InputValue.R);
+	InputValues.Add(InputValue.G);
+	InputValues.Add(InputValue.B);
+	InputValues.Add(InputValue.A);
+
+	if (Instance)
+	{
+		//Loop through our inputs and try and find a match
+		for (std::size_t i = 0; i < Instance->getInputs().size(); ++i)
+		{
+			SubstanceAir::InputInstanceBase* CurrentInput = Instance->getInputs()[i];
+			if (CurrentInput->mDesc.mIdentifier.c_str() == Identifier && CurrentInput->mDesc.isNumerical())
+			{
+				Substance::Helpers::SetNumericalInputValue((SubstanceAir::InputInstanceNumericalBase*)CurrentInput, InputValues);
+				Substance::Helpers::UpdateInput(this->Instance, CurrentInput, InputValues);
+				break;
+			}
+		}
+	}
+}
+
+void USubstanceGraphInstance::SetInputBool(FString Identifier, bool Bool)
+{
+	//Format value in a way we can pass to the engine
+	TArray<int32> Values;
+	Values.Add((int32)Bool);
+
+	if (Instance)
+	{
+		//Loop through our inputs and try and find a match
+		for (std::size_t i = 0; i < Instance->getInputs().size(); ++i)
+		{
+			SubstanceAir::InputInstanceBase* CurrentInput = Instance->getInputs()[i];
+			if (CurrentInput->mDesc.mIdentifier.c_str() == Identifier && CurrentInput->mDesc.isNumerical())
+			{
+				Substance::Helpers::SetNumericalInputValue((SubstanceAir::InputInstanceNumericalBase*)CurrentInput, Values);
+				Substance::Helpers::UpdateInput(this->Instance, CurrentInput, Values);
+				break;
+			}
+		}
+	}
+}
+
 TArray<int32> USubstanceGraphInstance::GetInputInt(FString IntputName)
 {
 	TArray< int32 > DummyValue;
@@ -632,6 +692,53 @@ FString USubstanceGraphInstance::GetInputString(FString Identifier)
 	return FString();
 }
 
+FLinearColor USubstanceGraphInstance::GetInputColor(FString Identifier)
+{
+	auto ItInInst = Instance->getInputs().begin();
+	for (; ItInInst != Instance->getInputs().end(); ++ItInInst)
+	{
+		if ((*ItInInst)->mDesc.mIdentifier.c_str() == Identifier && ((*ItInInst)->mDesc.mType == Substance_IType_Float4 || (*ItInInst)->mDesc.mType == Substance_IType_Float3))
+		{
+			FLinearColor ReturnColor;
+			TArray<float> Values = Substance::Helpers::GetValueFloat(*(*ItInInst));
+
+			ReturnColor.R = Values[0];
+			ReturnColor.G = Values[1];
+			ReturnColor.B = Values[2];
+
+			if (Values.Num() > 3)
+			{
+				ReturnColor.A = Values[3];
+			}
+			else
+			{
+				ReturnColor.A = 1.0f;
+			}
+
+			return ReturnColor;
+		}
+	}
+
+	UE_LOG(LogSubstanceCore, Warning, TEXT("Could not find a Color input value - returning emptry Color value"))
+	return FLinearColor();
+}
+
+bool USubstanceGraphInstance::GetInputBool(FString Identifier)
+{
+	auto ItInInst = Instance->getInputs().begin();
+	for (; ItInInst != Instance->getInputs().end(); ++ItInInst)
+	{
+		if ((*ItInInst)->mDesc.mIdentifier.c_str() == Identifier && (*ItInInst)->mDesc.mType == Substance_IType_String)
+		{
+			int32 Value = Substance::Helpers::GetValueInt(*(*ItInInst))[0];
+			return (Value > 0);
+		}
+	}
+
+	UE_LOG(LogSubstanceCore, Warning, TEXT("Could not find a bool input value - returning true value"))
+	return true;
+}
+
 using namespace Substance;
 
 FSubstanceFloatInputDesc USubstanceGraphInstance::GetFloatInputDesc(FString IntputName)
@@ -654,50 +761,50 @@ FSubstanceFloatInputDesc USubstanceGraphInstance::GetFloatInputDesc(FString Intp
 
 			switch ((*ItInInst)->mDesc.mType)
 			{
-			case Substance_IType_Float:
-				K2_InputDesc.Min.Add(((InputDescFloat*)InputDesc)->mMaxValue);
-				K2_InputDesc.Max.Add(((InputDescFloat*)InputDesc)->mMaxValue);
-				K2_InputDesc.Default.Add(((InputDescFloat*)InputDesc)->mDefaultValue);
-				break;
-			case Substance_IType_Float2:
-				K2_InputDesc.Min.Add(((InputDescFloat2*)InputDesc)->mMaxValue.x);
-				K2_InputDesc.Min.Add(((InputDescFloat2*)InputDesc)->mMaxValue.y);
+				case Substance_IType_Float:
+					K2_InputDesc.Min.Add(((InputDescFloat*)InputDesc)->mMaxValue);
+					K2_InputDesc.Max.Add(((InputDescFloat*)InputDesc)->mMaxValue);
+					K2_InputDesc.Default.Add(((InputDescFloat*)InputDesc)->mDefaultValue);
+					break;
+				case Substance_IType_Float2:
+					K2_InputDesc.Min.Add(((InputDescFloat2*)InputDesc)->mMaxValue.x);
+					K2_InputDesc.Min.Add(((InputDescFloat2*)InputDesc)->mMaxValue.y);
 
-				K2_InputDesc.Max.Add(((InputDescFloat2*)InputDesc)->mMaxValue.x);
-				K2_InputDesc.Max.Add(((InputDescFloat2*)InputDesc)->mMaxValue.y);
+					K2_InputDesc.Max.Add(((InputDescFloat2*)InputDesc)->mMaxValue.x);
+					K2_InputDesc.Max.Add(((InputDescFloat2*)InputDesc)->mMaxValue.y);
 
-				K2_InputDesc.Default.Add(((InputDescFloat2*)InputDesc)->mDefaultValue.x);
-				K2_InputDesc.Default.Add(((InputDescFloat2*)InputDesc)->mDefaultValue.y);
-				break;
-			case Substance_IType_Float3:
-				K2_InputDesc.Min.Add(((InputDescFloat3*)InputDesc)->mMaxValue.x);
-				K2_InputDesc.Min.Add(((InputDescFloat3*)InputDesc)->mMaxValue.y);
-				K2_InputDesc.Min.Add(((InputDescFloat3*)InputDesc)->mMaxValue.z);
+					K2_InputDesc.Default.Add(((InputDescFloat2*)InputDesc)->mDefaultValue.x);
+					K2_InputDesc.Default.Add(((InputDescFloat2*)InputDesc)->mDefaultValue.y);
+					break;
+				case Substance_IType_Float3:
+					K2_InputDesc.Min.Add(((InputDescFloat3*)InputDesc)->mMaxValue.x);
+					K2_InputDesc.Min.Add(((InputDescFloat3*)InputDesc)->mMaxValue.y);
+					K2_InputDesc.Min.Add(((InputDescFloat3*)InputDesc)->mMaxValue.z);
 
-				K2_InputDesc.Max.Add(((InputDescFloat3*)InputDesc)->mMaxValue.x);
-				K2_InputDesc.Max.Add(((InputDescFloat3*)InputDesc)->mMaxValue.y);
-				K2_InputDesc.Max.Add(((InputDescFloat3*)InputDesc)->mMaxValue.z);
+					K2_InputDesc.Max.Add(((InputDescFloat3*)InputDesc)->mMaxValue.x);
+					K2_InputDesc.Max.Add(((InputDescFloat3*)InputDesc)->mMaxValue.y);
+					K2_InputDesc.Max.Add(((InputDescFloat3*)InputDesc)->mMaxValue.z);
 
-				K2_InputDesc.Default.Add(((InputDescFloat3*)InputDesc)->mDefaultValue.x);
-				K2_InputDesc.Default.Add(((InputDescFloat3*)InputDesc)->mDefaultValue.y);
-				K2_InputDesc.Default.Add(((InputDescFloat3*)InputDesc)->mDefaultValue.z);
-				break;
-			case Substance_IType_Float4:
-				K2_InputDesc.Min.Add(((InputDescFloat4*)InputDesc)->mMaxValue.x);
-				K2_InputDesc.Min.Add(((InputDescFloat4*)InputDesc)->mMaxValue.y);
-				K2_InputDesc.Min.Add(((InputDescFloat4*)InputDesc)->mMaxValue.z);
-				K2_InputDesc.Min.Add(((InputDescFloat4*)InputDesc)->mMaxValue.w);
+					K2_InputDesc.Default.Add(((InputDescFloat3*)InputDesc)->mDefaultValue.x);
+					K2_InputDesc.Default.Add(((InputDescFloat3*)InputDesc)->mDefaultValue.y);
+					K2_InputDesc.Default.Add(((InputDescFloat3*)InputDesc)->mDefaultValue.z);
+					break;
+				case Substance_IType_Float4:
+					K2_InputDesc.Min.Add(((InputDescFloat4*)InputDesc)->mMaxValue.x);
+					K2_InputDesc.Min.Add(((InputDescFloat4*)InputDesc)->mMaxValue.y);
+					K2_InputDesc.Min.Add(((InputDescFloat4*)InputDesc)->mMaxValue.z);
+					K2_InputDesc.Min.Add(((InputDescFloat4*)InputDesc)->mMaxValue.w);
 
-				K2_InputDesc.Max.Add(((InputDescFloat4*)InputDesc)->mMaxValue.x);
-				K2_InputDesc.Max.Add(((InputDescFloat4*)InputDesc)->mMaxValue.y);
-				K2_InputDesc.Max.Add(((InputDescFloat4*)InputDesc)->mMaxValue.z);
-				K2_InputDesc.Min.Add(((InputDescFloat4*)InputDesc)->mMaxValue.w);
+					K2_InputDesc.Max.Add(((InputDescFloat4*)InputDesc)->mMaxValue.x);
+					K2_InputDesc.Max.Add(((InputDescFloat4*)InputDesc)->mMaxValue.y);
+					K2_InputDesc.Max.Add(((InputDescFloat4*)InputDesc)->mMaxValue.z);
+					K2_InputDesc.Min.Add(((InputDescFloat4*)InputDesc)->mMaxValue.w);
 
-				K2_InputDesc.Default.Add(((InputDescFloat4*)InputDesc)->mDefaultValue.x);
-				K2_InputDesc.Default.Add(((InputDescFloat4*)InputDesc)->mDefaultValue.y);
-				K2_InputDesc.Default.Add(((InputDescFloat4*)InputDesc)->mDefaultValue.z);
-				K2_InputDesc.Default.Add(((InputDescFloat4*)InputDesc)->mDefaultValue.w);
-				break;
+					K2_InputDesc.Default.Add(((InputDescFloat4*)InputDesc)->mDefaultValue.x);
+					K2_InputDesc.Default.Add(((InputDescFloat4*)InputDesc)->mDefaultValue.y);
+					K2_InputDesc.Default.Add(((InputDescFloat4*)InputDesc)->mDefaultValue.z);
+					K2_InputDesc.Default.Add(((InputDescFloat4*)InputDesc)->mDefaultValue.w);
+					break;
 			}
 		}
 	}
@@ -725,50 +832,50 @@ FSubstanceIntInputDesc USubstanceGraphInstance::GetIntInputDesc(FString IntputNa
 
 			switch ((*ItInInst)->mDesc.mType)
 			{
-			case Substance_IType_Integer:
-				K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt*)InputDesc)->mMinValue);
-				K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt*)InputDesc)->mMaxValue);
-				K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt*)InputDesc)->mDefaultValue);
-				break;
-			case Substance_IType_Integer2:
-				K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt2*)InputDesc)->mMinValue.x);
-				K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt2*)InputDesc)->mMinValue.y);
+				case Substance_IType_Integer:
+					K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt*)InputDesc)->mMinValue);
+					K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt*)InputDesc)->mMaxValue);
+					K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt*)InputDesc)->mDefaultValue);
+					break;
+				case Substance_IType_Integer2:
+					K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt2*)InputDesc)->mMinValue.x);
+					K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt2*)InputDesc)->mMinValue.y);
 
-				K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt2*)InputDesc)->mMaxValue.x);
-				K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt2*)InputDesc)->mMaxValue.y);
+					K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt2*)InputDesc)->mMaxValue.x);
+					K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt2*)InputDesc)->mMaxValue.y);
 
-				K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt2*)InputDesc)->mDefaultValue.x);
-				K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt2*)InputDesc)->mDefaultValue.y);
-				break;
-			case Substance_IType_Integer3:
-				K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mMinValue.x);
-				K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mMinValue.y);
-				K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mMinValue.z);
+					K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt2*)InputDesc)->mDefaultValue.x);
+					K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt2*)InputDesc)->mDefaultValue.y);
+					break;
+				case Substance_IType_Integer3:
+					K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mMinValue.x);
+					K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mMinValue.y);
+					K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mMinValue.z);
 
-				K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mMaxValue.x);
-				K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mMaxValue.y);
-				K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mMaxValue.z);
+					K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mMaxValue.x);
+					K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mMaxValue.y);
+					K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mMaxValue.z);
 
-				K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mDefaultValue.x);
-				K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mDefaultValue.y);
-				K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mDefaultValue.z);
-				break;
-			case Substance_IType_Integer4:
-				K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMinValue.x);
-				K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMinValue.y);
-				K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMinValue.z);
-				K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMinValue.w);
+					K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mDefaultValue.x);
+					K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mDefaultValue.y);
+					K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt3*)InputDesc)->mDefaultValue.z);
+					break;
+				case Substance_IType_Integer4:
+					K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMinValue.x);
+					K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMinValue.y);
+					K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMinValue.z);
+					K2_InputDesc.Min.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMinValue.w);
 
-				K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMaxValue.x);
-				K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMaxValue.y);
-				K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMaxValue.z);
-				K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMaxValue.w);
+					K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMaxValue.x);
+					K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMaxValue.y);
+					K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMaxValue.z);
+					K2_InputDesc.Max.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mMaxValue.w);
 
-				K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mDefaultValue.x);
-				K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mDefaultValue.y);
-				K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mDefaultValue.z);
-				K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mDefaultValue.w);
-				break;
+					K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mDefaultValue.x);
+					K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mDefaultValue.y);
+					K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mDefaultValue.z);
+					K2_InputDesc.Default.Add(((SubstanceAir::InputDescInt4*)InputDesc)->mDefaultValue.w);
+					break;
 			}
 		}
 	}
@@ -809,10 +916,14 @@ bool USubstanceGraphInstance::LinkImageInput(SubstanceAir::InputInstanceImage* I
 	//Check the map to see if we have the input
 	USubstanceImageInput* SubstanceImage = nullptr;
 	if (ImageSources.Find(ImageInput->mDesc.mUid))
+	{
 		SubstanceImage = *ImageSources.Find(ImageInput->mDesc.mUid);
+	}
 
 	if (SubstanceImage == nullptr)
+	{
 		return false;
+	}
 
 	//Sets the image input
 	Substance::Helpers::SetImageInput(ImageInput, SubstanceImage, Instance);

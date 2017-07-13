@@ -2,6 +2,11 @@
 // File: SubstanceEditorPrivatePCH.h
 
 #pragma once
+
+//NOTE:: This is added to prevent including framework classes outside of our module. The allows C++ projects
+//to use our core classes without breaking encapsulation for our framework headers.
+#define SUBSTANCE_FRAMEWORK_INCLUDED 1
+
 #include "UnrealEd.h"
 #include "Factories.h"
 

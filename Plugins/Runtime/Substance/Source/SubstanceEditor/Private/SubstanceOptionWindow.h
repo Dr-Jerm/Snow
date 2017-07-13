@@ -3,26 +3,27 @@
 
 #pragma once
 #include "SlateBasics.h"
+#include "SlateTypes.h"
 #include "AssetRegistryModule.h"
 #include "SubstanceImportOptionsUi.h"
 #include "MessageDialog.h"
 
 namespace Substance
 {
-	static FString InstancePath;
-	static FString MaterialPath;
+static FString InstancePath;
+static FString MaterialPath;
 }
 
 class SSubstanceOptionWindow : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS( SSubstanceOptionWindow )
+	SLATE_BEGIN_ARGS(SSubstanceOptionWindow)
 		: _ImportUI(NULL)
 		, _WidgetWindow()
-		{}
+	{}
 
-		SLATE_ARGUMENT( USubstanceImportOptionsUi*, ImportUI )
-		SLATE_ARGUMENT( TSharedPtr<SWindow>, WidgetWindow )
+	SLATE_ARGUMENT(USubstanceImportOptionsUi*, ImportUI)
+	SLATE_ARGUMENT(TSharedPtr<SWindow>, WidgetWindow)
 	SLATE_END_ARGS()
 
 public:
@@ -55,7 +56,7 @@ public:
 	FReply OnCancel()
 	{
 		bCanImport = false;
-		if ( WidgetWindow.IsValid() )
+		if (WidgetWindow.IsValid())
 		{
 			WidgetWindow.Pin()->RequestDestroyWindow();
 		}
@@ -67,7 +68,7 @@ public:
 		return bCanImport;
 	}
 
-	SSubstanceOptionWindow() 
+	SSubstanceOptionWindow()
 		: ImportUI(NULL)
 		, bCanImport(false)
 	{}
@@ -116,32 +117,32 @@ private:
 			return;
 		}
 
-		ImportUI->bCreateInstance = InNewValue == ESlateCheckBoxState::Checked ? true : false;
+		ImportUI->bCreateInstance = InNewValue == ECheckBoxState::Checked ? true : false;
 	}
 
 	ECheckBoxState GetCreateInstance() const
 	{
 		if (ImportUI->bForceCreateInstance)
 		{
-			return ESlateCheckBoxState::Checked;
+			return ECheckBoxState::Checked;
 		}
 
-		return ImportUI->bCreateInstance ? ESlateCheckBoxState::Checked : ESlateCheckBoxState::Unchecked;
+		return ImportUI->bCreateInstance ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
 	}
 
 	ECheckBoxState GetOverrideInstancePath() const
 	{
 		check(ImportUI);
-		return ImportUI->bOverrideInstancePath ? ESlateCheckBoxState::Checked : ESlateCheckBoxState::Unchecked;
+		return ImportUI->bOverrideInstancePath ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
 	}
 
 	void OnOverrideInstancePathChanged(ECheckBoxState InNewValue)
 	{
 		check(ImportUI);
-		ImportUI->bOverrideInstancePath = InNewValue == ESlateCheckBoxState::Checked ? true : false;
+		ImportUI->bOverrideInstancePath = InNewValue == ECheckBoxState::Checked ? true : false;
 	}
 
-	void OnInstancePathCommitted( const FText& NewValue, ETextCommit::Type CommitInfo )
+	void OnInstancePathCommitted(const FText& NewValue, ETextCommit::Type CommitInfo)
 	{
 		check(ImportUI);
 		ImportUI->InstanceDestinationPath = NewValue.ToString();
@@ -164,34 +165,34 @@ private:
 		{
 			return ImportUI->bCreateMaterial ? true : false;
 		}
-		
+
 		return false;
 	}
 
 	ECheckBoxState GetCreateMaterial() const
 	{
-		return ImportUI->bCreateMaterial ? ESlateCheckBoxState::Checked : ESlateCheckBoxState::Unchecked;
+		return ImportUI->bCreateMaterial ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
 	}
 
 	void OnCreateMaterialChanged(ECheckBoxState InNewValue) const
 	{
 		check(ImportUI);
-		ImportUI->bCreateMaterial = InNewValue == ESlateCheckBoxState::Checked ? true : false;
+		ImportUI->bCreateMaterial = InNewValue == ECheckBoxState::Checked ? true : false;
 	}
 
 	ECheckBoxState GetOverrideMaterialPath() const
 	{
 		check(ImportUI);
-		return ImportUI->bOverrideMaterialPath ? ESlateCheckBoxState::Checked : ESlateCheckBoxState::Unchecked;
+		return ImportUI->bOverrideMaterialPath ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
 	}
 
 	void OnOverrideMaterialPathChanged(ECheckBoxState InNewValue) const
 	{
 		check(ImportUI);
-		ImportUI->bOverrideMaterialPath = InNewValue == ESlateCheckBoxState::Checked ? true : false;
+		ImportUI->bOverrideMaterialPath = InNewValue == ECheckBoxState::Checked ? true : false;
 	}
 
-	void OnMaterialPathCommitted( const FText& NewValue, ETextCommit::Type CommitInfo ) const
+	void OnMaterialPathCommitted(const FText& NewValue, ETextCommit::Type CommitInfo) const
 	{
 		check(ImportUI);
 		ImportUI->MaterialDestinationPath = NewValue.ToString();

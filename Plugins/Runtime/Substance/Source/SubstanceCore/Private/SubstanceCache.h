@@ -6,8 +6,12 @@
 /** Forward Declare */
 class FArchive;
 class USubstanceTexture2D;
-class OutputInstance;
-class GraphInstance;
+
+namespace SubstanceAir
+{
+	class OutputInstance;
+	class GraphInstance;
+}
 
 namespace Substance
 {

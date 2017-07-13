@@ -15,8 +15,8 @@ struct InputImageData
 
 class InputInstanceImage;
 
-UCLASS(hideCategories = Object, MinimalAPI, BlueprintType)
-class USubstanceImageInput : public UObject
+UCLASS(hideCategories = Object, BlueprintType)
+class SUBSTANCECORE_API USubstanceImageInput : public UObject
 {
 	GENERATED_UCLASS_BODY()
 public:

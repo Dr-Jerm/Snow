@@ -6,9 +6,13 @@
 #include "SubstanceTexture2D.generated.h"
 
 /** Forward Declare */
-class OutputInstance;
-class GraphInstance;
 class USubstanceTexture2D;
+
+namespace SubstanceAir
+{
+	class OutputInstance;
+	class GraphInstance;
+}
 
 struct OutputInstanceData
 {
@@ -18,9 +22,13 @@ struct OutputInstanceData
 	FGuid CacheGuid;
 };
 
+//Note:: These are the current set of channels that we support in UE4 and not all
+//substance channel output types are listed here.
 UENUM(BlueprintType)
 enum ESubChannelType
 {
+	Diffuse,
+	Ambient,
 	BaseColor,
 	Metallic,
 	Roughness,
@@ -30,11 +38,15 @@ enum ESubChannelType
 	Opacity,
 	Refraction,
 	AmbientOcclusion,
+	Glossiness,
+	Height,
+	Displacement,
+	Reflection,
 	Invalid
 };
 
-UCLASS(hideCategories = Object, MinimalAPI)
-class USubstanceTexture2D : public UTexture2DDynamic
+UCLASS(hideCategories = Object)
+class SUBSTANCECORE_API USubstanceTexture2D : public UTexture2DDynamic
 {
 public:
 	GENERATED_UCLASS_BODY()

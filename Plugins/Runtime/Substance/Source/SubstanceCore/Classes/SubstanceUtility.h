@@ -18,6 +18,17 @@ enum ESubstanceTextureSize
 	ERL_4096 UMETA(DisplayName = "4096")
 };
 
+USTRUCT(BlueprintType)
+struct FSubstanceConnection
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substance")
+	FString OutputIdentifier;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Substance")
+	FString InputImageIdentifier;
+};
 
 UCLASS(BlueprintType, MinimalAPI)
 class USubstanceUtility : public UBlueprintFunctionLibrary
@@ -46,7 +57,11 @@ class USubstanceUtility : public UBlueprintFunctionLibrary
 
 	/* Create a dynamic Substance Graph Instance (no outputs enabled by default) */
 	UFUNCTION(BlueprintCallable, Category = "Substance", meta = (WorldContext = "WorldContextObject"))
-	static SUBSTANCECORE_API USubstanceGraphInstance * CreateGraphInstance(UObject* WorldContextObject, class USubstanceInstanceFactory* Factory, int32 GraphDescIndex, FString InstanceName = TEXT(""));
+	static SUBSTANCECORE_API USubstanceGraphInstance * CreateGraphInstance(
+	    UObject* WorldContextObject,
+	    class USubstanceInstanceFactory* Factory,
+	    int32 GraphDescIndex,
+	    FString InstanceName = TEXT(""));
 
 	/* Create a copy of Substance Graph Instance */
 	UFUNCTION(BlueprintCallable, Category = "Substance", meta = (WorldContext = "WorldContextObject"))
@@ -79,6 +94,16 @@ class USubstanceUtility : public UBlueprintFunctionLibrary
 	/* Clear Substance Memory Cache */
 	UFUNCTION(BlueprintCallable, Category = "Substance|Memory")
 	static SUBSTANCECORE_API void ClearCache();
+
+	/* Create an aggregate substance factory by fusing output images from one substance to the input images of another substance */
+	UFUNCTION(BlueprintCallable, Category = "Substance")
+	static SUBSTANCECORE_API USubstanceInstanceFactory * CreateAggregateSubstanceFactory(
+	    USubstanceInstanceFactory* OutputFactory,
+	    int32 OutputFactoryGraphIndex,
+	    USubstanceInstanceFactory* InputFactory,
+	    int32 InputFactoryGraphIndex,
+	    const TArray<FSubstanceConnection>& Connections
+	);
 
 	/* Queue a Substance Graph Instance in the renderer */
 	UFUNCTION(BlueprintCallable, Category = "Substance|Render")

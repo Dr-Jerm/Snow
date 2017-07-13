@@ -8,7 +8,7 @@ namespace UnrealBuildTool.Rules
 {
 public class SubstanceCore : ModuleRules
 {
-	public SubstanceCore(TargetInfo Target)
+	public SubstanceCore(ReadOnlyTargetRules Target) : base(Target)
 	{
 		//Internal defines
 		Definitions.Add("WITH_SUBSTANCE=1");

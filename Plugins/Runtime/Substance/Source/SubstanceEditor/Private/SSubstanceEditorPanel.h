@@ -8,15 +8,20 @@
 #include "SubstanceGraphInstance.h"
 #include "SubstanceCoreHelpers.h"
 
-class InputInstanceImage;
+//Forward declarations
+namespace SubstanceAir
+{
+struct InputDescBase;
 class InputInstanceBase;
+class InputInstanceImage;
+}
 
 class SSubstanceEditorPanel : public SCompoundWidget
 {
 public:
 	/** Slate Arguments */
 	SLATE_BEGIN_ARGS(SSubstanceEditorPanel) {}
-		SLATE_ARGUMENT(TWeakPtr<ISubstanceEditor>, SubstanceEditor)
+	SLATE_ARGUMENT(TWeakPtr<ISubstanceEditor>, SubstanceEditor)
 	SLATE_END_ARGS()
 
 	/** Destructor */
@@ -67,7 +72,10 @@ private:
 	void ConstructOutputs();
 	void ConstructInputs();
 
-	bool GetInputsEnabled() const { return !Graph->bIsFrozen; }
+	bool GetInputsEnabled() const
+	{
+		return !Graph->bIsFrozen;
+	}
 	void OnFreezeGraphValueChanged(ECheckBoxState InNewState);
 	ECheckBoxState GetFreezeGraphValue() const;
 
@@ -133,6 +141,6 @@ private:
 
 template< typename T > void GetMinMaxValues(const SubstanceAir::InputDescBase* Desc, const int32 i, T& Min, T& Max, bool& Clamped);
 
-template< > TSharedRef< SNumericEntryBox< float > > SSubstanceEditorPanel::GetInputWidgetSlider_internal<float>(SubstanceAir::InputInstanceBase* Input, const int32 SliderIndex);
+template< > TSharedRef< SNumericEntryBox< float >> SSubstanceEditorPanel::GetInputWidgetSlider_internal<float>(SubstanceAir::InputInstanceBase* Input, const int32 SliderIndex);
 
-template< > TSharedRef< SNumericEntryBox< int32 > > SSubstanceEditorPanel::GetInputWidgetSlider_internal<int32>(SubstanceAir::InputInstanceBase* Input, const int32 SliderIndex);
+template< > TSharedRef< SNumericEntryBox< int32 >> SSubstanceEditorPanel::GetInputWidgetSlider_internal<int32>(SubstanceAir::InputInstanceBase* Input, const int32 SliderIndex);
