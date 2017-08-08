@@ -13,9 +13,7 @@
 ASnowGameMode::ASnowGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-#if !UE_EDITOR
-	bUseAuthentication = true;
-#endif
+
 }
 
 void ASnowGameMode::HandleSeamlessTravelPlayer(AController *& Controller) {
