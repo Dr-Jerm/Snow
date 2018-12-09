@@ -46,18 +46,18 @@ MinDesiredFrameRate=90.000000
 [lanConfig]
 bEnabled=False
 bIsServer=False
-server="192.168.137.250"
+server="192.168.1.1"
 
 [snow]
 firstBoot=False
 beta=False
 
 [snowApi]
-host="http://159.203.217.221:3001"
-key="19215FC278C37FA59819558AB9CE588A4E312D26A1083C6F6CB61050E3B97696"
+host="http://0.0.0.0:3001"
+key=""
 
 [snowLog]
-host="http://159.203.217.221:5000"
+host="http://0.0.0.0:5000"
 
 [/Script/SubstanceCore.SubstanceSettings]
 DefaultGenerationMode=SGM_Baked
